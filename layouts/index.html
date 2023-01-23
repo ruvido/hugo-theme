@@ -1,0 +1,12 @@
+{{ define "main" }}
+	<main>
+
+		<hr>
+		{{ range where .Site.RegularPages "Type" "podcast" }}
+		{{ .Title }}
+		<hr>
+		{{ end }}
+
+	</main>
+{{ end }}
+

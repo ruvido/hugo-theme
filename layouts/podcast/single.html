@@ -1,0 +1,15 @@
+{{ define "main" }}
+{{ $mp3File := .Params.file }}
+{{ $podcastData := readFile "/content/podcast/_index.md" | transform.Unmarshal  }}
+{{ $mp3File = print "https://" $podcastData.storage $mp3File }}
+
+<main>    
+	<h1> {{ .Title }}</h1>
+	<div>
+		<a href="{{ $mp3File }}">Scarica l'episodio</a>
+	</div>
+
+	{{ .Content | safeHTML }}    
+
+</main>                                            
+{{ end }}      

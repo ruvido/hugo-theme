@@ -1,14 +1,17 @@
 {{ define "main" }}
-	<main>
+<main>
 
-		{{ .Content | safeHTML }}
+	{{ .Content | safeHTML }}
 
-		<hr>
-		{{ range where .Site.RegularPages "Type" "podcast" }}
-		{{ .Title }}
-		<hr>
-		{{ end }}
+	<div>
+		<ul>
+			{{ range where .Site.RegularPages "Type" "podcast" }}
+			<li><a href="{{ .RelPermalink }}">
+					{{ .Title }}</a></li>
+			{{ end }}
+		</ul>
+	</div>
 
-	</main>
+</main>
 {{ end }}
 

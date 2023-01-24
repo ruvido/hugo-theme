@@ -1,4 +1,4 @@
-{{ `<?xml version="1.0" encoding="utf-8"?>` | safeHTML }}
+{{ "<?xml version='1.0' encoding='utf-8'?>" | safeHTML }}
 <rss version="2.0"
 	xmlns:content="http://purl.org/rss/1.0/modules/content/"
 	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
@@ -8,58 +8,56 @@
 	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
 	xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"
 	xmlns:media="http://search.yahoo.com/mrss/">
+
+{{ $cover   := print "https://" .Params.Storage "static/" .Params.Cover }}
+{{ $safeContent := .Content | safeHTML }}
+{{ $content := print "<![CDATA[" $safeContent "]]>" }}
 <channel>
-	{{ $cover   := print .Site.BaseURL .Params.Cover }}
-	<title>{{ .Params.Title }}</title>
-	<atom:link href="" rel="self" type="application/rss+xml"/>
-	<link>{{ .Site.BaseURL }}{{ .Params.Url }}</link>
-	<description>{{ .Params.Description | safeHTML }}</description>
 	<lastBuildDate>{{ now.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</lastBuildDate>
-	<sy:updatePeriod>hourly</sy:updatePeriod>
-	<sy:updateFrequency>1</sy:updateFrequency>
-	<language>{{ .Params.Language }}</language>
-	<copyright>Copyright &#xA9; {{ .Params.Title }}</copyright>
-	<itunes:type>episodic</itunes:type>
-	<itunes:summary>{{ .Params.Description | safeHTML }}</itunes:summary>
-	<itunes:category text="Education">
-		<itunes:category text="Self-Improvement" />
-	</itunes:category>
-	<itunes:category text="Health &amp; Fitness">
-		<itunes:category text="Sexuality" />
-	</itunes:category>
-	<itunes:category text="Religion &amp; Spirituality">
-		<itunes:category text="Christianity" />
-	</itunes:category>
-	<itunes:author>{{ .Params.author }}</itunes:author>
-	<itunes:owner>
-		<itunes:name>{{ .Params.author }}</itunes:name>
-		<itunes:email>{{ .Params.email }}</itunes:email>
-	</itunes:owner>
-	<itunes:explicit>false</itunes:explicit>
+	<title>{{ .Params.title }}</title>
+	<link>https://{{ .Params.site }}</link>
+	<language>{{ .Params.language }}</language>
+	<copyright>{{ .Params.copyright}}</copyright>
+    <itunes:author>{{ .Params.author }}</itunes:author>
+	<description>{{ $content | safeHTML }}</description>
+    <itunes:type>episodic</itunes:type>
+    <itunes:owner>
+      <itunes:name>{{ .Params.author }}</itunes:name>
+      <itunes:email>{{ .Params.email }}</itunes:email>
+    </itunes:owner>
 	<itunes:image href="{{ $cover }}"/>
-	{{ $rootURL := print .Params.Prefix .Params.Storage }}
+	{{ range .Params.Categories }}
+	<itunes:category text="{{ .main }}">
+		<itunes:category text="{{ .subc }}" />
+	</itunes:category>
+	{{ end }}
+    <itunes:explicit>false</itunes:explicit>
+
+	{{ $rootURL := print "https://" .Params.Prefix .Params.Storage }}
 	{{ range where .Site.RegularPages "Type" "podcast" }}
+	{{ $content := print "<![CDATA[" .Content "]]>" }}
+
 	<item>
-		<itunes:episodeType>full</itunes:episodeType>
-		<itunes:episode>{{ .Params.Number}}</itunes:episode>
-		<itunes:season>{{ .Params.Season}}</itunes:season>
-		<title>{{ .Params.Title}}</title>
-		<description>{{ .Content | safeHTML }}</description>
-		<itunes:image href="{{ $cover }}"/>
-		<link>href=""</link>
-		<enclosure 
-			length="{{ .Params.Length}}" 
-			type="audio/mpeg" 
-			url="https://{{ $rootURL | safeHTML }}{{ .Params.File }}"
-			/>
-		<guid>{{ .Params.Guid}}</guid>
-		<pubDate>{{ .Params.date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML  }}</pubDate>
-		<itunes:duration>{{ .Params.Duration}}</itunes:duration>
-		<itunes:explicit>false</itunes:explicit>
-	</item>
+      <itunes:episodeType>full</itunes:episodeType>
+	  <itunes:episode>{{ .Params.Number }}</itunes:episode>
+      <itunes:season>{{ .Params.Season }}</itunes:season>
+      <title>{{ .Params.Title }}</title>
+	  <description>{{ $content | safeHTML }}</description>
+	  <itunes:image href="{{ $cover }}"/>
+	  <link>{{ .Permalink }}</link>
+      <enclosure 
+		  length="{{ .Params.length }}" 
+		  type="audio/mpeg" 
+		  url="{{ $rootURL }}{{ .Params.File }}"
+      />
+	  <guid>{{ .Params.Guid }}</guid>
+	  <pubDate>{{ .Params.date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>
+	  <itunes:duration>{{ .Params.Duration }}</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
 
 	{{ end }}
-
-
-</channel>
+	
+  </channel>
 </rss>
+

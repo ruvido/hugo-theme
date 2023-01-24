@@ -1,6 +1,8 @@
 {{ define "main" }}
 	<main>
 
+		{{ .Content | safeHTML }}
+
 		<hr>
 		{{ range where .Site.RegularPages "Type" "podcast" }}
 		{{ .Title }}

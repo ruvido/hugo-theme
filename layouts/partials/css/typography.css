@@ -1,0 +1,16 @@
+.hero-size{font-size: 330%;}
+.bigger-text{font-size: 120%;}
+h1,h2,h3,h4{
+	font-weight: normal;
+	line-height: 1.1;
+	margin-top: 0.4rem;
+	margin-bottom: 0.4rem;
+}
+h1 {
+	font-size: 2.2em;
+    margin-top: 0.8rem;
+    margin-bottom: 0.8rem;
+}
+h2 {font-size: 1.8em; padding-top: var(--half-padding);}
+h3 {font-size: 1.4em; padding-top: var(--half-padding);}
+li,p{line-height: var(--line-height);}

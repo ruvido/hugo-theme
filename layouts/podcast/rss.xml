@@ -8,11 +8,11 @@
 	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
 	xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"
 	xmlns:media="http://search.yahoo.com/mrss/">
-
 {{ $cover   := print "https://" .Params.Storage "static/" .Params.Cover }}
 {{ $safeContent := .Content | safeHTML }}
 {{ $content := print "<![CDATA[" $safeContent "]]>" }}
 <channel>
+	<atom:link href="https://{{ .Params.site }}{{.Params.url}}" rel="self" type="application/rss+xml" />
 	<lastBuildDate>{{ now.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</lastBuildDate>
 	<title>{{ .Params.title }}</title>
 	<link>https://{{ .Params.site }}</link>
@@ -31,7 +31,7 @@
 		<itunes:category text="{{ .subc }}" />
 	</itunes:category>
 	{{ end }}
-    <itunes:explicit>false</itunes:explicit>
+    <itunes:explicit>no</itunes:explicit>
 
 	{{ $rootURL := print "https://" .Params.Prefix .Params.Storage }}
 	{{ range where .Site.RegularPages "Type" "podcast" }}
@@ -42,7 +42,7 @@
 	  <itunes:episode>{{ .Params.Number }}</itunes:episode>
       <itunes:season>{{ .Params.Season }}</itunes:season>
       <title>{{ .Params.Title }}</title>
-	  <description>{{ $content | safeHTML }}</description>
+	  <description>{{ $content  | safeHTML }}</description>
 	  <itunes:image href="{{ $cover }}"/>
 	  <link>{{ .Permalink }}</link>
       <enclosure 
@@ -50,10 +50,10 @@
 		  type="audio/mpeg" 
 		  url="{{ $rootURL }}{{ .Params.File }}"
       />
-	  <guid>{{ .Params.Guid }}</guid>
+	  <guid isPermaLink="false">{{ .Params.Guid }}</guid>
 	  <pubDate>{{ .Params.date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>
 	  <itunes:duration>{{ .Params.Duration }}</itunes:duration>
-      <itunes:explicit>false</itunes:explicit>
+      <itunes:explicit>no</itunes:explicit>
     </item>
 
 	{{ end }}

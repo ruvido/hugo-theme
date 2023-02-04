@@ -1,3 +1,24 @@
 <footer>
-	<p>&copy; {{ now.Year }} <a href="{{ .Site.BaseURL }}">{{ .Site.Title }}</a></p>
+		<h3><i>
+				<a href="/">{{site.Data.setup.title}}</a></i></h3>
+		<div class="double-space">&nbsp;</div>
+
+	<section>
+		{{ $data := newScratch }}
+		{{ $data.Set "essential" .Site.Taxonomies.categories.essential }}
+		{{ $data.Set "footer" .Site.Taxonomies.categories.footer}}
+
+		{{ $arguments := slice "essential" "footer" }}
+		{{ range $arguments }} 
+
+		<menu>
+		{{ range $data.Get . }}
+			<li><a href="{{.RelPermalink}}">{{ .Title }}</a></li>
+		{{ end }}
+		</menu>
+		{{ end }}
+	</section>
+
+		{{ partial "components/copyleft.html" . }}
+
 </footer>

@@ -4,12 +4,15 @@
 {{ $mp3File = print "https://" $podcastData.storage $mp3File }}
 
 <main>    
-	<h1> {{ .Title }}</h1>
-	<div>
-		<a href="{{ $mp3File }}">Scarica l'episodio</a>
-	</div>
+	<article>
+		<h1> {{ .Title }}</h1>
+		<div>
+			{{ partial "components/spotifyPlayer.html" . }}
+			<a href="{{ $mp3File }}">Scarica l'episodio</a>
+		</div>
 
-	{{ .Content | safeHTML }}    
+		{{ .Content | safeHTML }}    
+	</article>
 
 </main>                                            
 {{ end }}      

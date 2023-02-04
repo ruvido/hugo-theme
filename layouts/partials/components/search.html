@@ -1,0 +1,68 @@
+<div x-data="{ open: false }">
+    <button @click="open = !open">Expand</button>
+ 
+    <span x-show="open">
+      Content...
+    </span>
+</div>
+
+{{ range (where .Site.RegularPages "Type" "ne" "page") }}
+<li>{{.Title}} - {{ .Type }}</li>
+{{end}}
+
+<div x-data="{ 
+	 showSearchDocs: false,
+	 search: '',
+	 items: [ {'searchable': 'ciao'}, {'searchable': 'bao'} ],
+	 test: this.search,
+	 get results(){
+	 	let sslowe = this.search.toLowerCase()
+		if ( this.search === '' ) { this.showSearchDocs = true; return [] }
+	 	else {
+	 		this.showSearchDocs = false
+	 		let res = this.items.filter( ww => ww.searchable.toLowerCase().includes(sslowe))
+	 		return res
+	 	}
+	 },
+	get resultsMultiWords(){
+    	let sslowe = this.search.toLowerCase()
+    	if ( this.search === '' ) { this.showSearchDocs = true; return [] }
+    	else {
+        	this.showSearchDocs = false
+        	let res = this.items;
+        	for (ii of sslowe.split(' ')) {
+            	res = res.filter( ww => ww.searchable.toLowerCase().includes(ii))
+        	}
+        	return res
+    	}
+    },
+    setSearch(tag){this.search='+'+tag; this.showTag = tag},
+    showTag: true
+}">
+
+
+<center>
+<form class="search-form shadow">
+	<span class="inverse icon">{{ partial "svg/search-bold.svg" }}
+</span>
+    <input x-model="search" type="search" placeholder="cerca qui...">
+</form>
+</center>
+
+<hr>
+
+<center x-cloak x-show="!showSearchDocs"><small>trovati: <span x-text="resultsMultiWords.length"></span></small></center>
+
+
+<ul class="playlist" x-show="!showSearchDocs">
+<template x-for="item in resultsMultiWords">
+    <a x-bind:alt="item.title" x-bind:href="item.url">
+        <li class="compact">
+            <span class="ico" x-html="item.icon"></span>
+            <span class="nowrap" x-text="item.title"></span>
+        </li>
+    </a>
+</template>
+</ul>
+
+</div>

@@ -1,0 +1,25 @@
+.search-form {
+    margin: 1rem auto;
+    width: 80%;
+    color: #555;
+    display: flex;
+    padding: var(--half-font-size);
+    border: var(--quarter-font-size) solid var(--inverse-light);
+    border-radius: var(--base-icon-size);
+    align-items: center;
+    background-color: white;
+}
+.search-form input[type="search"]:focus {
+    outline: none;
+}
+.search-form input[type="search"] {
+    width: 100%;
+    font-weight: 900;
+    font-size: 100%;
+    border: none;
+    padding-left: var(--half-font-size);
+    padding-right: var(--quarter-font-size);
+}
+.search-form input[type="search"]::placeholder {
+  color: var(--inverse-very-light);
+}

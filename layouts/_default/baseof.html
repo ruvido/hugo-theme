@@ -4,13 +4,31 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>{{ .Title | default .Site.Title }}</title>
+	{{ $defaultTitle := print site.Data.setup.title " " site.Data.setup.subTitle  }}
+	<title>{{ .Title | default $defaultTitle }} | {{ site.Data.setup.title }}</title>
 	{{ with .Site.Params.description }}<meta name="description" content="{{ . }}">{{ end }}
 	{{ with .Site.Params.author }}<meta name="author" content="{{ . }}">{{ end }}
 	<link rel="stylesheet" href="{{ "css/style.css" | relURL }}">
 	{{ with .OutputFormats.Get "RSS" -}}
 		{{ printf `<link rel="%s" type="%s" href="%s" title="%s">` .Rel .MediaType.Type .RelPermalink $.Site.Title | safeHTML }}
 	{{- end }}
+	{{ partial "components/linkRSS.html"  | safeHTML}}
+	{{ partial "components/favicon.html"  | safeHTML}}
+
+<style>
+{{ partial "css/reset.css"      .  | print | safeCSS }}
+{{ partial "css/palette.css"    .  | print | safeCSS }}
+{{ partial "css/fonts.css"      .  | print | safeCSS }}
+{{ partial "css/typography.css" .  | print | safeCSS }}
+{{ partial "css/flex.css"       .  | print | safeCSS }}
+{{ partial "css/main.css"       .  | print | safeCSS }}
+{{ partial "css/svg.css"        .  | print | safeCSS }}
+{{ partial "css/form.css"        .  | print | safeCSS }}
+{{ partial "css/extra.css"      .  | print | safeCSS }}
+{{ partial "css/media.css"      .  | print | safeCSS }}
+</style>
+{{ partial "scripts.html" }}
+
 </head>
 <body>
 	{{ partial "header" . }}

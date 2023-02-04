@@ -1,0 +1,32 @@
+:root {
+  --primary-dark:		#AB8900;
+  --primary:			#FFDE59;
+  --primary-light: 	    #ffec5cff;
+  --primary-very-light: #fffdebff;
+
+  --inverse: 			#1f1f1f;
+  --inverse-light: 		#222222;
+  --inverse-very-light:	#9e9e9e;
+
+  --color-text: 		var(--inverse);
+  --color-text-inverse:	var(--primary);
+  --color-text-light: 	var(--inverse-light);
+
+  --color-alert: 		#f55d5dff;
+}
+/*-----------------------------------------------------*/
+.text-light {color:var(--color-text-light);}
+.inverse, button.inverse[type='tag'] {
+	color: var(--primary);
+	background-color: var(--inverse);
+}
+.light {background-color: var(--primary-very-light)}
+/*-----------------------------------------------------*/
+body{
+	background: var(--primary);
+    color: var(--color-text);
+}
+footer {
+	background: var(--inverse);
+	color: var(--color-text-inverse);
+}

@@ -1,0 +1,28 @@
+{{ define "main" }}
+{{ $spotified:= "" }}
+{{ $showPlayer:= true }}
+<main>
+	{{ $spotifyData := readFile "/data/spotify.json" | transform.Unmarshal  }}
+	{{ $top := true }}
+
+	<div>
+		<ul>
+	{{ range where .Site.RegularPages "Type" "podcast" }}
+	{{ $spotified = partial "components/spotifyID.html" . }}
+	{{ if ne $spotified "" }}
+		{{ if $top }} 
+			{{ partial "components/spotifyPlayer.html" . }}
+		{{ $top = false }}
+		{{end}}
+			<li><a href="{{ .RelPermalink }}">
+					{{ .Title }}</a></li>
+	{{end}}
+	{{end}}
+		</ul>
+	</div>
+
+	{{ .Content | safeHTML }}
+
+</main>
+{{ end }}
+

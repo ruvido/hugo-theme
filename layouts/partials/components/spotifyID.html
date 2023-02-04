@@ -1,0 +1,9 @@
+{{ $spotifyData := readFile "/data/spotify.json" | transform.Unmarshal  }}
+	{{ $title := .Title }}                               
+	{{ $id := "" }}
+	{{ range $spotifyData.items }}                       
+		{{ if in .name $title }}           
+			{{ $id = .id }}
+	   	{{ end }}
+	{{ end }}
+	{{return $id}}

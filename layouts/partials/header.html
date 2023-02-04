@@ -1,12 +1,9 @@
 <header>
-	<a href="{{ .Site.BaseURL }}">{{ .Site.Title }}</a>
-	{{ with .Site.Menus.main }}
 	<nav>
-		<ul>
-			{{ range . }}
-			<li><a href="{{ .URL | relURL }}">{{ .Name }}</a></li>
-			{{ end }}
-		</ul>
+		<li><a href="/">
+				<span class="bigger-text hero-text">
+					{{ .Site.Title }}</span></a></li>
+		<li><a href="/search/"><span class="inverse icon">
+					{{ partial "svg/search-bold.svg" }}</span></a></li>
 	</nav>
-	{{ end }}
 </header>

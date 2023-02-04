@@ -1,0 +1,32 @@
+/* BREAKPOINTS 
+iphone-7:  375px;
+iphone-12: 390px;
+tablet:    768px;
+laptop:   1366px;
+desktop:  1680px;
+*/
+/*------------------------ IPHONE-7 breakpoint */
+@media (min-width: 375px) { 
+/* main{padding: 0 1rem} ERRO*/
+main #hero h1{font-size: 3em;}
+main #hero h2{font-size: 1.3em;}
+}
+/*------------------------ TABLET breakpoint */
+@media (min-width: 768px) { 
+body{font-size: 120%;} 
+p{line-height: 1.6;}
+menu,nav,ul{margin: var(--double-padding);}
+blockquote{font-size: 200%; max-width: 300px;}
+.icon{height: 48px; width: 48px;}
+.hero-size{font-size: 430%;}
+.bigger-text{font-size: 160%;}
+footer section {display:flex; justify-content: space-between;}
+footer section {;margin:0; padding: 0;}
+menu {margin:0;}
+.caz{}
+}
+/*------------------------ LAPTOP breakpoint */
+@media (min-width:1366px) { 
+body{font-size: 130%;}
+p{padding-bottom: 1.2rem;line-height: 1.6;}
+}

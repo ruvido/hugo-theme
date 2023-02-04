@@ -1,0 +1,17 @@
+:root{
+	--base-icon-size:   var(--double-font-size);
+}
+svg {
+	height: 50%;
+	min-width: var(--base-icon-size);
+}
+.inverse svg {fill: var(--primary);}
+.white   svg {fill: var(--primary-very-light);}
+.icon{
+	height: var(--base-icon-size); 
+	width: var(--base-icon-size);
+	display:flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 50%;
+}

@@ -1,0 +1,14 @@
+<ul class="playlist">
+	{{ range first .items .pages }}
+    <a href="{{ .RelPermalink }}">
+        <li class="standout">
+            <span class="title nowrap">{{ .Title }}</span>
+            <span class="number">{{ .Params.number }}</span></li>
+    </a>
+	{{ end }}
+    <a href="/search/">
+        <li class="standout light">
+        <span class="title">Tutti i contenuti</span>
+        <span class="number compact">-></span></li>
+    </a>
+</ul>

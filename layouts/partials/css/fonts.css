@@ -1,0 +1,20 @@
+@font-face{
+	font-family: "gagalin";
+	font-weight: 400;
+	font-style:	 normal;
+	src:local('Gagalin'),url('/fonts/Gagalin-Regular.woff') format('woff')
+}
+
+@font-face {
+	font-family: "Inter UI";
+	font-weight: 100 900;
+	font-style:  oblique 0deg 10deg;
+	src: url("/fonts/Inter-3.19.var.woff2") format("woff2");
+}
+:root {
+	--hero-font: gagalin;
+	--text-font: Inter UI, sans serif;
+}
+body {font-family: var(--text-font);}
+h1,h2,h3,h4,.hero-text{font-family: var(--hero-font);}
+h2,h4,.hero-text{font-style: italic;}

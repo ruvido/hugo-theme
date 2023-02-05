@@ -2,8 +2,6 @@
 {{ $spotifyData := readFile "/data/spotify.json" | transform.Unmarshal  }}
 <main>
 
-	vps
-
 	<section>
 		{{ partial "components/hero" }}
 		{{ .Content | safeHTML }}

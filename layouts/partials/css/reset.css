@@ -17,7 +17,7 @@ h1,h2,h3,h4,h5,h6{margin:0;}
 article,p,ul{margin:0}
 
 menu,nav{margin: var(--half-padding) 0; padding:0; list-style: none}
-a {text-decoration: none; color: inherit; font-weight: bold;}
+a {text-decoration: underline dotted red; color: inherit; font-weight: bold;}
 body{font-size: var(--base-font-size);}
 
 /* stop iOS styling inputs */

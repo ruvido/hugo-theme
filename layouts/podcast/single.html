@@ -1,17 +1,32 @@
 {{ define "main" }}
 {{ $mp3File := .Params.file }}
-{{ $podcastData := readFile "/content/podcast/_index.md" | transform.Unmarshal  }}
+{{ $podcastConfig := "/content/podcast/_index.md" }}
+{{ $podcastData := readFile $podcastConfig | transform.Unmarshal  }}
 {{ $mp3File = print "https://" $podcastData.storage $mp3File }}
 
 <main>    
 	<article>
 		<h1> {{ .Title }}</h1>
+		<p class="details">
+			<strong>season</strong> {{ .Params.season }}  
+			<strong>number</strong> {{ .Params.number }}
+			&nbsp; | &nbsp;
+			<a href="{{ $mp3File }}">scarica l'episodio</a>
+		</p>
 		<p>
 			{{ partial "components/spotifyPlayer.html" . }}
-			<a href="{{ $mp3File }}">Scarica l'episodio</a>
 		</p>
 
-		{{ .Content | safeHTML }}    
+		{{ with .Content }}
+			<hr>
+			{{ . | safeHTML}}
+		{{end}}
+
+		{{ with .Site.GetPage $podcastConfig }}
+		<hr>
+		{{.Content | safeHTML}}
+		{{end}}
+
 	</article>
 
 </main>                                            

@@ -61,3 +61,7 @@ ul.playlist li .number {
     white-space: nowrap;
     text-overflow: ellipsis;
 }
+.details {
+	font-size: 70%;
+	text-transform: uppercase;
+}

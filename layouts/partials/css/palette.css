@@ -30,3 +30,4 @@ footer {
 	background: var(--inverse);
 	color: var(--color-text-inverse);
 }
+p a {text-decoration: underline}

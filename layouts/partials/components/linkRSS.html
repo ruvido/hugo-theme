@@ -1,4 +1,4 @@
-{{ if .Params.podcast }}
+{{ if .Site.Params.podcast }}
 {{ $podcastData := readFile "/content/podcast/_index.md" | transform.Unmarshal  }}
 <link rel="alternate" type="application/atom+xml" href="{{ $podcastData.url }}">
 {{ end }}

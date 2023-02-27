@@ -1,5 +1,4 @@
 {{ define "main" }}
-{{ $spotifyData := readFile "/data/spotify.json" | transform.Unmarshal  }}
 <main>
 
 	<section>
@@ -9,16 +8,18 @@
 
 	<hr>
 
+	{{ if .Params.podcast }}
 	<section>
+		{{ $spotifyData := readFile "/data/spotify.json" | transform.Unmarshal  }}
 		{{ $lastEpisode := index $spotifyData.items 0}}
 		{{ partial "components/spotifyPlayerByID.html" (dict "id" $lastEpisode.id) }}
 	</section>
-
 	<section>
 		{{ $podcastPages := 
 		(where .Site.RegularPages "Type" "podcast" ) }}
 		{{ partial "components/playlist" (dict "pages" $podcastPages "items" site.Data.setup.playlistItems) }}
 	</section>
+	{{ end }}
 
 	<hr>
 

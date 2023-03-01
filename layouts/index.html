@@ -8,7 +8,7 @@
 
 	<hr>
 
-	{{ if .Params.podcast }}
+	{{ if .Site.Params.podcast }}
 	<section>
 		{{ $spotifyData := readFile "/data/spotify.json" | transform.Unmarshal  }}
 		{{ $lastEpisode := index $spotifyData.items 0}}

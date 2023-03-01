@@ -8,7 +8,6 @@
 	<title>{{ .Title | default $defaultTitle }} | {{ site.Data.setup.title }}</title>
 	{{ with .Site.Params.description }}<meta name="description" content="{{ . }}">{{ end }}
 	{{ with .Site.Params.author }}<meta name="author" content="{{ . }}">{{ end }}
-	<link rel="stylesheet" href="{{ "css/style.css" | relURL }}">
 	{{ with .OutputFormats.Get "RSS" -}}
 		{{ printf `<link rel="%s" type="%s" href="%s" title="%s">` .Rel .MediaType.Type .RelPermalink $.Site.Title | safeHTML }}
 	{{- end }}
@@ -23,11 +22,12 @@
 {{ partial "css/flex.css"       .  | print | safeCSS }}
 {{ partial "css/main.css"       .  | print | safeCSS }}
 {{ partial "css/svg.css"        .  | print | safeCSS }}
-{{ partial "css/form.css"        .  | print | safeCSS }}
+{{ partial "css/form.css"       .  | print | safeCSS }}
 {{ partial "css/extra.css"      .  | print | safeCSS }}
 {{ partial "css/media.css"      .  | print | safeCSS }}
 </style>
-{{ partial "scripts.html" }}
+<link rel="stylesheet" href="{{ "/style.css" | relURL }}">
+{{ partial "scripts.html" . }}
 
 </head>
 <body>

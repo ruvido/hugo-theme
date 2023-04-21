@@ -5,11 +5,16 @@
 		<h1>{{ .Title | safeHTML }}</h1>
 		{{ end }}
 
-		{{ with .Date}}
-		<div><small>Pubblicato il {{ .Format "02.01.2006" }}
-			</small></div>
-		{{end}}
+		<div>
+			{{ with .Date}}
+			<small>Pubblicato il <strong>{{ .Format "02.01.2006" }}</strong>
+			</small>
+			{{end}}
 
+			{{ with .Params.author}}
+			<small>da <strong>{{ . }}</strong></small>
+			{{end}}
+		</div>
 		{{ with .Params.tags }}
 		<div>
 			<ul id="tags">

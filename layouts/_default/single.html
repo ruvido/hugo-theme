@@ -21,7 +21,7 @@
 		{{ end }}
 
 		<div>
-			{{ .Content }}
+			{{ .Content | safeHTML }} 
 		</div>
 	</article>
 </main>

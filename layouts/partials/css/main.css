@@ -6,7 +6,7 @@ main {
 	margin: 0 auto;
 	width: 100%;
 	max-width: 768px;
-	margin-bottom: 2rem;
+	padding-bottom: 2rem;
 }
 section, article {padding: 0 var(--base-padding);}
 footer {
@@ -19,3 +19,4 @@ menu li {margin: var(--half-padding) 0; }
 p {
 	margin: var(--base-padding) auto;
 }
+li ul {padding: 0; margin: 0.2rem 2rem; font-size: 100%;}

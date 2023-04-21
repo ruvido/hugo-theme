@@ -3,7 +3,10 @@
 		<li><a href="/">
 				<span class="bigger-text hero-text">
 					{{ .Site.Title }}</span></a></li>
+
+		{{ if ne .Site.Params.search false }}
 		<li><a href="/search/"><span class="inverse icon">
 					{{ partial "svg/search-bold.svg" }}</span></a></li>
+		{{ end }}
 	</nav>
 </header>

@@ -1,0 +1,30 @@
+<form x-data="emailData" x-on:submit.prevent>                             
+
+<p x-text="email"></p>
+<button x-on:click="unsubscribeEmail" class="send inverse">cancellami</button>
+</form>     
+               
+<script src="/js/pocketbase.umd.js"></script>
+<script>         
+	const pb = new PocketBase("https://pb.realmen.it")
+	//const pb = new PocketBase("http://127.0.0.1:8090")
+	const pbListName = 'emails'
+	emailData={      
+		email: new URLSearchParams(location.search).get('email'),
+		async unsubscribeEmail(){
+			console.log(this.email)
+			try {
+				const unsub = await pb.send("/unsubscribe?email="+this.email, {
+					query: { "email": this.email },
+				});
+				//console.log(unsub)
+			} 
+			catch (err) {
+				console.log ('errrrr')
+				<!-- console.log (err.data.code) -->
+				<!-- console.log (err.data.message) -->
+				<!-- console.log (err.data.data.email.code) -->
+			}
+		}
+	}
+</script>

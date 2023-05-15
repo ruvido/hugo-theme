@@ -1,0 +1,59 @@
+<form x-data="emailData" x-on:submit.prevent>                             
+<input x-model="email"  name="email"  placeholder="La tua email">         
+<button x-on:click="registerEmail" class="send inverse">iscriviti</button>
+<div x-show="error" class="error">I campi sono tutti obbligatori</div>
+</form>     
+               
+<script src="/js/pocketbase.umd.js"></script>
+<script>         
+	const pb = new PocketBase("https://pb.realmen.it")
+	//const pb = new PocketBase("http://127.0.0.1:8090")
+	const pbListName = 'emails'
+	emailData={      
+		email: '',   
+		error: false,
+		async registerEmail(){
+			const pbData = {
+				"email": this.email,
+				"verified": false,
+				"newsletter": true,
+				"password": "123456789",
+				"passwordConfirm": "123456789"
+			}
+			try {
+				const record = await pb.collection(pbListName).create(pbData);
+				console.log(this.email)
+				//console.log(record)
+				//console.log(valida)
+			} 
+			catch (err) {
+				console.log ('errrrr')
+				console.log (err.data.code)
+				console.log (err.data.message)
+				console.log (err.data.data.email.code)
+			}
+			const valida = await pb.collection(pbListName).requestVerification(this.email);
+			console.log('verification email is sent in EVERY case')
+			//this.error = false
+			//if (this.email == '') {this.error=true}
+		}
+	}
+</script>
+
+                                                  
+<!-- ////<script type="module">                             -->
+<!-- import PocketBase from '/js/pocketbase.es.mjs'     -->
+<!-- const pb = new PocketBase("https://pb.realmen.it") -->
+<!---->
+<!-- const data = { -->
+<!-- //"username": "ruvido", -->
+<!-- "email": "ruvido@gmail.com", -->
+<!-- //"emailVisibility": true, -->
+<!-- //"password": "12345678", -->
+<!-- //"passwordConfirm": "12345678", -->
+<!-- //"name": "ruvido_name" -->
+<!-- }; -->
+<!-- //await pb.collection('emails').requestVerification('ruvido@gmail.com'); -->
+<!---->
+<!---->
+<!-- ////</script> -->

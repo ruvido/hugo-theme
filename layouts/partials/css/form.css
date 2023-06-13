@@ -1,5 +1,5 @@
 .search-form {
-    margin: 1rem auto;
+    margin: 0.4rem auto;
     width: 80%;
     color: #555;
     display: flex;
@@ -22,4 +22,19 @@
 }
 .search-form input[type="search"]::placeholder {
   color: var(--inverse-very-light);
+}
+.message {
+	margin: 20px;
+	display: block;
+	padding: 10px;
+	line-height: 1.3;
+	border-radius: 4px;
+}
+.error {
+	background: var(--color-alert);
+	color:  var(--color-alert-dark);
+}
+.success {
+	background: var(--color-success);
+	color:  var(--color-success-dark);
 }

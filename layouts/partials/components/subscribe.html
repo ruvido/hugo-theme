@@ -1,8 +1,12 @@
-<form x-data="emailData" x-on:submit.prevent>                             
-<input x-model="email"  name="email"  placeholder="La tua email">         
-<button x-on:click="registerEmail" class="send inverse">iscriviti</button>
-<div x-show="error" class="error">I campi sono tutti obbligatori</div>
+<center x-data="emailData">
+<form class="search-form shadow" x-on:submit.prevent @keyup.enter="registerEmail">                             
+	<input type="search" x-model="email"  name="email"  placeholder="{{ .Get 0 }}">         
+<span x-show="!loader" x-on:click="registerEmail" class="inverse bigger icon">{{ partial "svg/arrow-circle-right.svg" }}</span>
+<span x-show="loader" class="icon">{{ partial "svg/loader.svg" }}</span>
 </form>     
+<small x-show="error" class="error message" x-text="errorMessage"></small>
+<div x-show="success" class="success message">📥 <strong>Ci sei quasi!</strong> Ti abbiamo mandato una email per <strong>verificare</strong> il tuo indirizzo</div></div>
+</center>
                
 <script src="/js/pocketbase.umd.js"></script>
 <script>         
@@ -11,7 +15,10 @@
 	const pbListName = 'emails'
 	emailData={      
 		email: '',   
+		errorMessage: "",
 		error: false,
+		loader: false,
+		success: false,
 		async registerEmail(){
 			const pbData = {
 				"email": this.email,
@@ -20,22 +27,40 @@
 				"password": "123456789",
 				"passwordConfirm": "123456789"
 			}
-			try {
-				const record = await pb.collection(pbListName).create(pbData);
-				console.log(this.email)
-				//console.log(record)
-				//console.log(valida)
-			} 
-			catch (err) {
-				console.log ('errrrr')
-				console.log (err.data.code)
-				console.log (err.data.message)
-				console.log (err.data.data.email.code)
+			this.error = false
+			if (this.email == '') {
+				this.success = false;
+				this.error=true
+				this.errorMessage = "⚠️  Campo email vuoto?"
+				console.log('empty email')
 			}
-			const valida = await pb.collection(pbListName).requestVerification(this.email);
-			console.log('verification email is sent in EVERY case')
-			//this.error = false
-			//if (this.email == '') {this.error=true}
+			else {
+				this.loader = true;
+				try {
+					const record = await pb.collection(pbListName).create(pbData);
+					console.log(this.email)
+				} 
+				catch (err) {
+					//console.log (err.data.code)
+					//console.log (err.data.message)
+					//console.log (err.data.data.email.code)
+					console.log('Email is already in db?')
+				}
+
+				try {
+					console.log('Send confirmation email')
+					const valida = await pb.collection(pbListName).requestVerification(this.email);
+					this.success = true;
+					this.email = ""
+				}
+				catch (err) {
+					this.success = false;
+					this.error = true
+					this.errorMessage = "💀 Ehi! non sembra una email corretta... controlla."
+					console.log ('Unable to send confirmation email: bad email format?')
+				}
+				this.loader = false;
+			}
 		}
 	}
 </script>

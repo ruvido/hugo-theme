@@ -13,6 +13,10 @@
   --color-text-light: 	var(--inverse-light);
 
   --color-alert: 		#f55d5dff;
+  --color-alert-dark: 	#7D1424;
+
+  --color-success: 		#57cc99;
+  --color-success-dark:  #14402C;
 }
 /*-----------------------------------------------------*/
 .text-light {color:var(--color-text-light);}

@@ -20,6 +20,7 @@
 		loader: false,
 		success: false,
 		async registerEmail(){
+			this.email = this.email.trim()
 			const pbData = {
 				"email": this.email,
 				"verified": false,
@@ -28,6 +29,8 @@
 				"passwordConfirm": "123456789"
 			}
 			this.error = false
+					console.log(this.email)
+					console.log(this.email.trim())
 			if (this.email == '') {
 				this.success = false;
 				this.error=true

@@ -3,9 +3,10 @@
 
 	<section>
 		{{ partial "components/hero" }}
-
 		{{ .Content | safeHTML }}
 	</section>
+
+	<hr>
 
 	{{ if .Site.Params.podcast }}
 	<section>

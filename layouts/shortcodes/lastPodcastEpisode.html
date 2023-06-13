@@ -1,0 +1,5 @@
+<section>
+{{ $spotifyData := readFile "/data/spotify.json" | transform.Unmarshal  }}
+{{ $lastEpisode := index $spotifyData.items 0}}
+{{ partial "components/spotifyPlayerByID.html" (dict "id" $lastEpisode.id) | safeHTML }}
+</section>

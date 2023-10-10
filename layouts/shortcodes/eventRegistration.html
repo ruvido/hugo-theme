@@ -1,0 +1,58 @@
+<center x-data="emailData">
+<form x-show="!success" class="search-form shadow" x-on:submit.prevent @keyup.enter="registerEmail">                             
+	<input type="search" x-model="email"  name="email"  placeholder="La tua email">         
+<span x-show="!loader" x-on:click="registerEmail" class="inverse bigger icon">{{ partial "svg/arrow-circle-right.svg" }}</span>
+<span x-show="loader" class="icon">{{ partial "svg/loader.svg" }}</span>
+</form>     
+<small x-show="error" class="error message" x-text="errorMessage"></small>
+<div x-show="success" class="success message">📥 <strong>Grazie!</strong> Ti abbiamo mandato una email al tuo indirizzo di posta con i dettagli dell'evento</div></div>
+</center>
+               
+<script src="/js/pocketbase.umd.js"></script>
+<script>         
+	const pb = new PocketBase( {{ .Site.Params.pocketbaseConfig.address }} )
+	const pbListName = {{ .Page.Params.Event.collection }}
+	emailData={      
+		email: '',   
+		errorMessage: "",
+		error: false,
+		loader: false,
+		success: false,
+		async registerEmail(){
+			this.email = this.email.trim()
+			const pbData = {
+				"email": this.email,
+				"data" : {
+					"emailSend": {{ .Page.Params.Event.emailSend }}
+				}
+			}
+			this.error = false
+			if (this.email == '') {
+				this.success = false;
+				this.error=true
+				this.errorMessage = "⚠️  Campo email vuoto?"
+				console.log('empty email')
+			}
+			else {
+				this.loader = true;
+				try {
+					const record = await pb.collection(pbListName).create(pbData);
+					console.log(this.email)
+					this.success = true;
+					this.email = ""
+					this.error = false
+				} 
+				catch (err) {
+					console.log (err.data.code)
+					console.log (err.data.message)
+					//console.log (err.data.data.email.code)
+					this.success = false;
+					this.error = true
+					this.errorMessage = "💀 Ehi! non sembra una email corretta... controlla."
+					console.log ('Unable to send confirmation email: bad email format?')
+				}
+				this.loader = false;
+			}
+		}
+	}
+</script>

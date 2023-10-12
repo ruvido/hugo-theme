@@ -13,4 +13,10 @@ h1 {
 }
 h2 {font-size: 1.8em; padding-top: var(--half-padding);}
 h3 {font-size: 1.4em; padding-top: var(--half-padding);}
+h4 {line-height: 1.4; border-left: 14px solid white; padding-left: 10px;}
 li,p{line-height: var(--line-height);}
+
+.copyright{
+	font-size: 10px;
+}
+

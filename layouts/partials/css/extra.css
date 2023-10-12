@@ -65,3 +65,11 @@ ul.playlist li .number {
 	font-size: 70%;
 	text-transform: uppercase;
 }
+
+table {
+border: 14px solid white; padding-left: 10px;}
+
+/* article img:first-child { */
+/* 	position: relative; */
+/* 	left: -1rem; */
+/* } */

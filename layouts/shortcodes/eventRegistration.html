@@ -12,6 +12,8 @@
 <script>         
 	const pb = new PocketBase( {{ .Site.Params.pocketbaseConfig.address }} )
 	const pbListName = {{ .Page.Params.Event.collection }}
+	console.log({{ .Site.Params.pocketbaseConfig.address }})
+	console.log({{ .Page.Params.Event.collection }})
 	emailData={      
 		email: '',   
 		errorMessage: "",
@@ -23,7 +25,8 @@
 			const pbData = {
 				"email": this.email,
 				"data" : {
-					"emailSend": {{ .Page.Params.Event.emailSend }}
+					"eventName": {{ .Page.Params.Event.name }},
+					"emailSend": {{ .Page.Params.Event.emailSend }},
 				}
 			}
 			this.error = false

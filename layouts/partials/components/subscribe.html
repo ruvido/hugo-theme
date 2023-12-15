@@ -10,7 +10,8 @@
                
 <script src="/js/pocketbase.umd.js"></script>
 <script>         
-	const pb = new PocketBase("https://pb.realmen.it")
+
+	const pb = new PocketBase({{ .Site.Params.pocketbase.server }})
 	//const pb = new PocketBase("http://127.0.0.1:8090")
 	const pbListName = 'emails'
 	emailData={      

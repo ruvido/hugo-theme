@@ -16,5 +16,3 @@
 	--text-font: Inter UI, sans serif;
 }
 body {font-family: var(--text-font);}
-h1,h2,h3,h4,.hero-text{font-family: var(--hero-font);}
-h2,h4,.hero-text{font-style: italic;}

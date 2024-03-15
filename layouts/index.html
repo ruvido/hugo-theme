@@ -1,24 +1,10 @@
 {{ define "main" }}
 <main>
 
-	<section>
-		{{ partial "components/hero" }}
+	{{ partial "components/hero" }}
 
-		{{ .Content | safeHTML }}
-	</section>
+	{{ .Content | safeHTML }}
 
-	{{ if .Site.Params.podcast }}
-	<section>
-		{{ $spotifyData := readFile "/data/spotify.json" | transform.Unmarshal  }}
-		{{ $lastEpisode := index $spotifyData.items 0}}
-		{{ partial "components/spotifyPlayerByID.html" (dict "id" $lastEpisode.id) }}
-	</section>
-	<section>
-		{{ $podcastPages := 
-		(where .Site.RegularPages "Type" "podcast" ) }}
-		{{ partial "components/playlist" (dict "pages" $podcastPages "items" site.Data.setup.playlistItems) }}
-	</section>
-	{{ end }}
 
 	<hr>
 

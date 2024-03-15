@@ -1,4 +1,2 @@
-<section>
 {{ $podcastPages := (where .Site.RegularPages "Type" "podcast" ) }}
 {{ partial "components/playlist" (dict "pages" $podcastPages "items" site.Data.setup.playlistItems) }}
-</section>

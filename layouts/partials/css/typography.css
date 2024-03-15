@@ -1,5 +1,6 @@
 .hero-size{font-size: 330%;}
 .bigger-text{font-size: 120%;}
+.verybig-text{font-size: 180%;}
 h1,h2,h3,h4{
 	font-weight: normal;
 	line-height: 1.1;
@@ -7,7 +8,7 @@ h1,h2,h3,h4{
 	margin-bottom: 0.4rem;
 }
 h1 {
-	font-size: 2.2em;
+	font-size: 2.8em;
     margin-top: 0.8rem;
     margin-bottom: 0.8rem;
 }
@@ -15,6 +16,11 @@ h2 {font-size: 1.8em; padding-top: var(--half-padding);}
 h3 {font-size: 1.4em; padding-top: var(--half-padding);}
 h4 {line-height: 1.4; border-left: 14px solid white; padding-left: 10px;}
 li,p{line-height: var(--line-height);}
+h1,h2,h3,h4,.hero-text{font-family: var(--hero-font);}
+/* h2,h4,.hero-text{font-style: italic;} */
+.hero-text{
+font-style: italic;
+font-weight: 400;}
 
 .copyright{
 	font-size: 10px;

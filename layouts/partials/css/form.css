@@ -1,11 +1,13 @@
 .search-form {
     margin: 0.4rem auto;
-    width: 80%;
+    /* width: 80%; */
+	max-width: 600px;
     color: #555;
     display: flex;
     padding: var(--half-font-size);
     border: var(--quarter-font-size) solid var(--inverse-light);
-    border-radius: var(--base-icon-size);
+    /* border-radius: var(--base-icon-size); */
+    border-radius: 10px;
     align-items: center;
     background-color: white;
 }

@@ -7,18 +7,23 @@
 <main>    
 	<article>
 		<h1> {{ .Title }}</h1>
+			<hr>
 		<p class="details">
 			<strong>season</strong> {{ .Params.season }}  
 			<strong>number</strong> {{ .Params.number }}
 			&nbsp; | &nbsp;
 			<a href="{{ $mp3File }}">scarica l'episodio</a>
 		</p>
-		<p>
-			{{ partial "components/spotifyPlayer.html" . }}
-		</p>
+		<!-- <p> -->
+		<!-- 	{{ partial "components/spotifyPlayer.html" . }} -->
+		<!-- </p> -->
+
+		<center>
+		<audio controls 
+			src="{{ $mp3File }}"></audio>
+		</center>
 
 		{{ with .Content }}
-			<hr>
 			{{ . | safeHTML}}
 		{{end}}
 
@@ -27,6 +32,27 @@
 		{{.Content | safeHTML}}
 		{{end}}
 
+		<hr>
+		<p>Ascolta il podcast anche su:</p>
+		<div class="icon-bar">
+
+		{{ with .Site.Params.podcast.deezer }}
+		<a href="{{.}}">
+			<img src="/icons/podcast/deezer-podcast.png"></a>
+		{{ end }}
+		{{ with .Site.Params.podcast.spotify}}
+		<a href="{{.}}">
+			<img src="/icons/podcast/spotify-podcast.png"></a>
+		{{ end }}
+		{{ with .Site.Params.podcast.apple}}
+		<a href="{{.}}">
+		<img src="/icons/podcast/apple-podcast.png"></a>
+		{{ end }}
+		{{ with .Site.Params.podcast.google}}
+		<a href="{{.}}">
+		<img src="/icons/podcast/google-podcast.png"></a>
+		{{ end }}
+		</div>
 	</article>
 
 </main>                                            

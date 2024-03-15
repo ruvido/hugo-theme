@@ -48,6 +48,7 @@ ul.playlist li .number {
     padding: 0 0.6rem;
     font-size: 150%;
     font-family: var(--hero-font);
+	font-weight: 100;
 }
 .standout {            
     margin: 0 auto;
@@ -73,3 +74,6 @@ border: 14px solid white; padding-left: 10px;}
 /* 	position: relative; */
 /* 	left: -1rem; */
 /* } */
+.icon-bar img{
+	max-width: 36px;
+}

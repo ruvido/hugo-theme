@@ -15,6 +15,23 @@ h1 {
 h2 {font-size: 1.8em; padding-top: var(--half-padding);}
 h3 {font-size: 1.4em; padding-top: var(--half-padding);}
 h4 {line-height: 1.4; border-left: 14px solid white; padding-left: 10px;}
+/* h2 { */
+/*             position: relative; */
+/*             padding-left: 30px; /* Space for the box */
+/* 			display: inline-block; */
+/*         } */
+
+        /* h2::before { */
+        /*     content: ''; */
+        /*     display: inline-block; */
+        /*     width: 20px; /* Box width */ */
+        /*     height: 20px; /* Box height */ */
+        /*     background-color: white; /* Box color */ */
+        /*     position: absolute; */
+        /*     left: 0; */
+        /*     bottom: 0%; */
+        /*     transform: translateY(-20%); /* Vertically center the box */ */
+        /* } */
 li,p{line-height: var(--line-height);}
 h1,h2,h3,h4,.hero-text{font-family: var(--hero-font);}
 /* h2,h4,.hero-text{font-style: italic;} */
@@ -26,3 +43,26 @@ font-weight: 400;}
 	font-size: 10px;
 }
 
+/* h1,h2 { */
+/*   padding-bottom: 18px; */
+/*   position: relative; */
+/* 	display: inline-block; */
+/* } */
+/* h1::before, h2::before { */
+/*   content: ""; */
+/*   position: absolute; */
+/*   left: 0%; */
+/*   bottom: 16px; */
+/*   width: 100%; */
+/*   height: 14px; */
+/*   transform: skew(-12deg) translateX(1%); */
+/*   background: white; */
+/*   z-index: -1; */
+/* } */
+h1,h2 {
+	font-style: italic;
+	display:inline;
+  background-image: linear-gradient(to bottom, white 30%, transparent 00%);
+  background-position: 0 1.8rem;
+  background-repeat: repeat-x;
+}

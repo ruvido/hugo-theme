@@ -1,0 +1,8 @@
+
+<h2>
+	Ultimi articoli
+</h2>
+
+{{ $articles := (where .Site.RegularPages "Type" "articles" ) }}
+<!-- {{ partial "components/playlist" (dict "pages" $articles "items" site.Data.setup.playlistItems) }} -->
+{{ partial "components/playlist" (dict "pages" $articles "items" 3) }}

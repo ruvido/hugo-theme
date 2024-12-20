@@ -1,6 +1,7 @@
 .hero-size{font-size: 330%;}
 .bigger-text{font-size: 120%;}
 .verybig-text{font-size: 180%;}
+h1,h2,h3,h4,.hero-text{font-family: var(--hero-font);}
 h1,h2,h3,h4{
 	font-weight: normal;
 	line-height: 1.1;
@@ -32,8 +33,6 @@ h4 {line-height: 1.4; border-left: 14px solid white; padding-left: 10px;}
         /*     bottom: 0%; */
         /*     transform: translateY(-20%); /* Vertically center the box */ */
         /* } */
-li,p{line-height: var(--line-height);}
-h1,h2,h3,h4,.hero-text{font-family: var(--hero-font);}
 /* h2,h4,.hero-text{font-style: italic;} */
 .hero-text{
 font-style: italic;
@@ -59,6 +58,11 @@ font-weight: 400;}
 /*   background: white; */
 /*   z-index: -1; */
 /* } */
+h1::before, h2::before { 
+    display: block;
+    content: ""; 
+    height: 20px; 
+}
 h1,h2 {
 	font-style: italic;
 	display:inline;
@@ -66,3 +70,9 @@ h1,h2 {
   background-position: 0 1.8rem;
   background-repeat: repeat-x;
 }
+
+
+
+li,p{line-height: var(--line-height);}
+p {padding-top:20px;}
+li p {padding-top:10px;}

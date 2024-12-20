@@ -23,7 +23,6 @@ blockquote{font-size: 200%; max-width: 300px;}
 footer section {display:flex; justify-content: space-between;}
 footer section {;margin:0; padding: 0;}
 menu {margin:0;}
-.caz{}
 }
 /*------------------------ LAPTOP breakpoint */
 @media (min-width:1366px) { 

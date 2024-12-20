@@ -4,3 +4,25 @@ header {}
 nav {display:flex; justify-content: space-between; align-items: center;}
 main   {flex:1 0 auto;}
 footer {flex-shrink: 0;}
+
+
+.pay {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.pay a {
+    flex: 1 1 40%; /* Adjusts the width of the links to be around 45% of the container */
+    margin: 5px; /* Adds some space between the items */
+    text-align: center; /* Centers the text */
+    padding: 10px; /* Adds padding for better appearance */
+    background-color: #f0f0f0; /* Background color for the links */
+    border: 1px solid #ccc; /* Border for the links */
+    text-decoration: none; /* Removes underline from links */
+    color: #000; /* Text color */
+}
+
+.pay a.wide {
+    flex: 1 1 100%; /* Makes the last link take the full width */
+}
+

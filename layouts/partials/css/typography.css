@@ -16,27 +16,11 @@ h1 {
 h2 {font-size: 1.8em; padding-top: var(--half-padding);}
 h3 {font-size: 1.4em; padding-top: var(--half-padding);}
 h4 {line-height: 1.4; border-left: 14px solid white; padding-left: 10px;}
-/* h2 { */
-/*             position: relative; */
-/*             padding-left: 30px; /* Space for the box */
-/* 			display: inline-block; */
-/*         } */
 
-        /* h2::before { */
-        /*     content: ''; */
-        /*     display: inline-block; */
-        /*     width: 20px; /* Box width */ */
-        /*     height: 20px; /* Box height */ */
-        /*     background-color: white; /* Box color */ */
-        /*     position: absolute; */
-        /*     left: 0; */
-        /*     bottom: 0%; */
-        /*     transform: translateY(-20%); /* Vertically center the box */ */
-        /* } */
-/* h2,h4,.hero-text{font-style: italic;} */
 .hero-text{
-font-style: italic;
-font-weight: 400;}
+    font-style: italic;
+    font-weight: 400;
+}
 
 .copyright{
 	font-size: 10px;

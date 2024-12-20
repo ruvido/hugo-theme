@@ -20,7 +20,4 @@ p {
 	margin: 0.0rem auto;
 	/*margin: var(--base-padding) auto;*/
 }
-li ul {padding: 0; margin: 0.2rem 2rem; font-size: 100%;}
 .hero {margin-bottom: 1.6rem;}
-
-article ul li {padding-top: 0.0rem;}

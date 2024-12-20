@@ -15,14 +15,15 @@ main #hero h2{font-size: 1.3em;}
 @media (min-width: 768px) { 
 body{font-size: 120%;} 
 p{line-height: 1.6;}
-menu,nav,ul{margin: var(--double-padding);}
+menu,nav{margin: var(--double-padding);}
+ul {margin: var(--base-padding);}
 blockquote{font-size: 200%; max-width: 300px;}
 .icon{height: 48px; width: 48px;}
 .hero-size{font-size: 430%;}
 .bigger-text{font-size: 160%;}
 footer section {display:flex; justify-content: space-between;}
 footer section {;margin:0; padding: 0;}
-menu {margin:0;}
+/*menu {margin:0;}*/
 }
 /*------------------------ LAPTOP breakpoint */
 @media (min-width:1366px) { 

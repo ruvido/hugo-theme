@@ -1,0 +1,155 @@
+{{- /* Gallery Shortcode - Optimized with Hugo Best Practices */ -}}
+{{- $gap := .Get "gap" | default "0.5rem" -}}
+{{- $mobile := .Get "mobile" | default "768px" -}}
+{{- $defaultRatio := .Get "ratio" | default "1.5" -}}
+{{- $thumbWidth := .Get "thumbWidth" | default "600" -}}
+
+{{- /* Parse default ratio: supports "3/2", "16:9", or decimal "1.5" */ -}}
+{{- $parsedRatio := float $defaultRatio -}}
+{{- if strings.Contains $defaultRatio "/" -}}
+  {{- $parts := split $defaultRatio "/" -}}
+  {{- if eq (len $parts) 2 -}}
+    {{- $parsedRatio = div (float (index $parts 0)) (float (index $parts 1)) -}}
+  {{- end -}}
+{{- else if strings.Contains $defaultRatio ":" -}}
+  {{- $parts := split $defaultRatio ":" -}}
+  {{- if eq (len $parts) 2 -}}
+    {{- $parsedRatio = div (float (index $parts 0)) (float (index $parts 1)) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Split content into rows */ -}}
+{{- $content := trim .Inner "\n\t " -}}
+{{- $rows := split $content "\n" -}}
+
+<div class="rm-gallery" style="--gap: {{ $gap }};">
+{{- range $rowIndex, $rowContent := $rows -}}
+  {{- $rowContent = trim $rowContent " \t" -}}
+  {{- if ne $rowContent "" -}}
+    {{- $imageNames := split $rowContent " " -}}
+    {{- $processedImages := slice -}}
+    {{- $ratios := slice -}}
+    {{- $totalRatio := 0.0 -}}
+
+    {{- /* Process each image */ -}}
+    {{- range $imageName := $imageNames -}}
+      {{- $imageName = trim $imageName " \t" -}}
+      {{- if ne $imageName "" -}}
+        {{- $resource := $.Page.Resources.Get $imageName -}}
+
+        {{- /* Fallback to assets/images/ */ -}}
+        {{- if not $resource -}}
+          {{- $assetsPath := printf "images/%s" $imageName -}}
+          {{- $resource = resources.Get $assetsPath -}}
+        {{- end -}}
+
+        {{- if $resource -}}
+          {{- /* Calculate ratio from real dimensions */ -}}
+          {{- $ratio := div (float $resource.Width) (float $resource.Height) -}}
+
+          {{- /* Generate thumbnail (600px WebP q85) */ -}}
+          {{- $thumb := $resource.Resize (printf "%sx webp q85" $thumbWidth) -}}
+
+          {{- /* Store image data */ -}}
+          {{- $imageData := dict "thumb" $thumb "original" $resource "ratio" $ratio -}}
+          {{- $processedImages = $processedImages | append $imageData -}}
+          {{- $ratios = $ratios | append $ratio -}}
+          {{- $totalRatio = add $totalRatio $ratio -}}
+        {{- else -}}
+          {{- warnf "Gallery image not found: %s (page: %s)" $imageName $.Page.File.Path -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+
+    {{- /* Render row if images found */ -}}
+    {{- if gt (len $processedImages) 0 -}}
+      {{- /* Build grid-template-columns using delimit */ -}}
+      {{- $frValues := slice -}}
+      {{- range $ratios -}}
+        {{- $frValues = $frValues | append (printf "%.3gfr" .) -}}
+      {{- end -}}
+      {{- $gridCols := delimit $frValues " " -}}
+
+      <div class="rm-gallery-row" style="aspect-ratio: {{ $totalRatio }}; grid-template-columns: {{ $gridCols }};">
+        {{- range $img := $processedImages -}}
+          <a href="{{ $img.original.Permalink }}"
+             class="rm-gallery-item"
+             data-glightbox="gallery-{{ $rowIndex }}"
+             data-gallery="gallery-{{ $rowIndex }}">
+            <img src="{{ $img.thumb.Permalink }}"
+                 alt="{{ $.Page.Title }}"
+                 width="{{ $img.thumb.Width }}"
+                 height="{{ $img.thumb.Height }}"
+                 loading="lazy"
+                 decoding="async">
+          </a>
+        {{- end -}}
+      </div>
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+</div>
+
+{{- /* Load GLightbox and CSS only once per page */ -}}
+{{- if not (.Page.Scratch.Get "rm-gallery-loaded") -}}
+  {{- .Page.Scratch.Set "rm-gallery-loaded" true -}}
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      GLightbox({
+        touchNavigation: true,
+        loop: true,
+        autoplayVideos: false
+      });
+    });
+  </script>
+
+  <style>
+  .rm-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap, 0.5rem);
+    margin: 2rem 0;
+  }
+
+  .rm-gallery-row {
+    display: grid;
+    gap: var(--gap, 0.5rem);
+    width: 100%;
+  }
+
+  .rm-gallery-item {
+    display: block;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    line-height: 0;
+  }
+
+  .rm-gallery-item:hover {
+    transform: scale(1.02);
+  }
+
+  .rm-gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Mobile: 1 column layout */
+  @media (max-width: {{ $mobile }}) {
+    .rm-gallery-row {
+      grid-template-columns: 1fr !important;
+      aspect-ratio: auto !important;
+    }
+
+    .rm-gallery-item img {
+      height: auto !important;
+      object-fit: contain;
+    }
+  }
+  </style>
+{{- end -}}

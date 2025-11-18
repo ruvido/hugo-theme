@@ -25,6 +25,12 @@
 .search-form input[type="search"]::placeholder {
   color: var(--inverse-very-light);
 }
+
+/* Page content spacing after H1 */
+.page-content {
+	margin-top: 1.5rem;
+}
+
 /* Custom form container */
 form {
 	max-width: 100%;
@@ -43,7 +49,7 @@ form label span {
 	align-items: center;
 	justify-content: space-between;
 	margin-bottom: 0.5rem;
-	font-weight: 500;
+	font-weight: 700;
 }
 
 form label span small {
@@ -98,7 +104,7 @@ form textarea[aria-invalid="false"] {
 /* Submit button */
 form button[type="submit"] {
 	width: 100%;
-	padding: 0.75rem 1.5rem;
+	padding: 1rem 1.5rem;
 	font-size: 1.1rem;
 	font-weight: 900;
 	background-color: var(--inverse);

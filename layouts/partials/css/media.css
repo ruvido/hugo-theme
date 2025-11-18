@@ -12,9 +12,9 @@ main #hero h1{font-size: 3em;}
 main #hero h2{font-size: 1.3em;}
 }
 /*------------------------ TABLET breakpoint */
-@media (min-width: 768px) { 
-body{font-size: 120%;} 
-p{line-height: 1.6;}
+@media (min-width: 768px) {
+body{font-size: 120%;}
+p{line-height: 1.6; padding-top: 0.85rem;}
 menu,nav{margin: var(--double-padding);}
 ul {margin: var(--base-padding);}
 blockquote{font-size: 200%; max-width: 300px;}
@@ -24,9 +24,13 @@ blockquote{font-size: 200%; max-width: 300px;}
 footer section {display:flex; justify-content: space-between;}
 footer section {;margin:0; padding: 0;}
 /*menu {margin:0;}*/
+form {margin: 1rem auto;}
+form label {margin-bottom: 0.625rem;}
 }
 /*------------------------ LAPTOP breakpoint */
-@media (min-width:1366px) { 
+@media (min-width:1366px) {
 body{font-size: 130%;}
-p{padding-bottom: 1.2rem;line-height: 1.6;}
+p{padding-top: 0.7rem; padding-bottom: 1rem; line-height: 1.6;}
+form {margin: 0.875rem auto;}
+form label {margin-bottom: 0.5rem;}
 }

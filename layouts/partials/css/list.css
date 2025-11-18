@@ -4,7 +4,7 @@ ol {padding-top: 0.625rem;}
 
 li ul {padding: 0; margin: 0.2rem 2rem; font-size: 100%;}
 
-article ul li {padding-top: 0.0rem;padding-right: 18px;}
+article ul li {padding-top: 0.25rem; padding-right: 18px;}
 
 ul.playlist {
     margin-bottom: 2rem;

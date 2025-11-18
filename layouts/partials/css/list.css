@@ -1,3 +1,7 @@
+/* List spacing - matches p {padding-top: 1.25rem;} in typography.css */
+ul {padding-top: 1.25rem;}
+ol {padding-top: 1.25rem;}
+
 li ul {padding: 0; margin: 0.2rem 2rem; font-size: 100%;}
 
 article ul li {padding-top: 0.0rem;padding-right: 18px;}

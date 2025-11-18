@@ -1,5 +1,8 @@
 <section>
-{{ $spotifyData := readFile "/data/spotify.json" | transform.Unmarshal  }}
-{{ $lastEpisode := index $spotifyData.items 0}}
-{{ partial "components/spotifyPlayerByID.html" (dict "id" $lastEpisode.id) | safeHTML }}
+{{ $podcastPages := (where .Site.RegularPages "Type" "podcast" ) }}
+{{ $lastEpisode := index $podcastPages 0 }}
+{{ $podcastConfig := "/content/podcast/_index.md" }}
+{{ $podcastData := readFile $podcastConfig | transform.Unmarshal  }}
+{{ $mp3File := print "https://" $podcastData.storage $lastEpisode.Params.file }}
+<audio controls src="{{ $mp3File }}"></audio>
 </section>

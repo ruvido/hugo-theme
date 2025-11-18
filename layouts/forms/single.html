@@ -1,0 +1,201 @@
+{{ define "main" }}
+
+<main>
+<article>
+
+<!-- Page Title and Description -->
+{{ if .Title }}
+<h1>{{ .Title }}</h1>
+{{ end }}
+
+{{ if .Content }}
+<div class="page-content">
+{{ .Content }}
+
+<!-- Custom Form -->
+{{ if .Params.form }}
+
+<!-- Form Script - MUST be before x-data -->
+<script src="/js/pocketbase.umd.js"></script>
+<script>
+	const pb = new PocketBase({{ .Site.Params.pocketbase.server }})
+
+	// Field validation config
+	const fieldConfig = {
+		{{ range .Params.form.fields }}
+		'{{ .name }}': { type: '{{ .type }}', required: {{ if .required }}true{{ else }}false{{ end }} },
+		{{ end }}
+	};
+
+	window.formData = {
+		formFields: {
+			{{ range .Params.form.fields }}
+			'{{ .name }}': '',
+			{{ end }}
+		},
+		errors: {
+			{{ range .Params.form.fields }}
+			'{{ .name }}': '',
+			{{ end }}
+		},
+		touched: {
+			{{ range .Params.form.fields }}
+			'{{ .name }}': false,
+			{{ end }}
+		},
+		loader: false,
+		submitted: false,
+		success: false,
+
+		validateField(fieldName) {
+			// Mark as touched
+			this.touched[fieldName] = true;
+
+			// Clear error first
+			this.errors[fieldName] = '';
+
+			const value = this.formFields[fieldName];
+			const config = fieldConfig[fieldName];
+
+			// Check required
+			if (config.required && (!value || value.trim() === '')) {
+				this.errors[fieldName] = 'Campo obbligatorio';
+				return false;
+			}
+
+			// Check email format
+			if (config.type === 'email' && value && value.trim() !== '') {
+				const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+				if (!emailRegex.test(value)) {
+					this.errors[fieldName] = 'Email non valida';
+					return false;
+				}
+			}
+
+			return true;
+		},
+
+		getAriaInvalid(fieldName) {
+			// Only set aria-invalid if field has been touched
+			if (!this.touched[fieldName]) {
+				return null; // Don't set aria-invalid at all
+			}
+			return this.errors[fieldName] ? 'true' : 'false';
+		},
+
+		async submitForm() {
+			// Validate all fields
+			let hasError = false;
+			{{ range .Params.form.fields }}
+			if (!this.validateField('{{ .name }}')) {
+				hasError = true;
+			}
+			{{ end }}
+
+			if (hasError) return;
+
+			// Prepare data for PocketBase (following official docs: https://pocketbase.io/docs/api-records/)
+			const pbData = {
+				name: '{{ .Params.form.name }}',
+				data: this.formFields,
+				page_url: window.location.href,
+				timestamp: new Date().toISOString()
+			};
+
+			this.loader = true;
+
+			try {
+				// Submit to PocketBase using official SDK method
+				const record = await pb.collection('forms').create(pbData);
+				console.log('Form submitted successfully:', record);
+				this.success = true;
+				this.submitted = true;
+
+				// Reset form
+				{{ range .Params.form.fields }}
+				this.formFields['{{ .name }}'] = '';
+				{{ end }}
+			} catch (err) {
+				console.error('Form submission error:', err);
+				this.error = true;
+				this.success = false;
+				this.submitted = true;
+
+				if (err.data && err.data.message) {
+					this.errorMessage = '❌ ' + err.data.message;
+				} else {
+					this.errorMessage = '❌ Errore durante l\'invio. Riprova più tardi.';
+				}
+			} finally {
+				this.loader = false;
+			}
+		}
+	};
+</script>
+
+<div x-data="formData">
+
+	<!-- Form (Pico CSS semantic HTML) -->
+	<form x-show="!submitted" x-on:submit.prevent="submitForm">
+
+		<!-- Dynamic Fields -->
+		{{ range .Params.form.fields }}
+		<label>
+			<span>
+				{{ .label }}{{ if .required }}*{{ end }}
+				<small x-show="errors.{{ .name }}" x-text="errors.{{ .name }}" style="color: red;"></small>
+			</span>
+
+			{{ if eq .type "textarea" }}
+			<textarea
+				name="{{ .name }}"
+				x-model="formFields.{{ .name }}"
+				@blur="validateField('{{ .name }}')"
+				:aria-invalid="getAriaInvalid('{{ .name }}')"
+				{{ if .placeholder }}placeholder="{{ .placeholder }}"{{ end }}
+			></textarea>
+			{{ else }}
+			<input
+				type="{{ .type }}"
+				name="{{ .name }}"
+				x-model="formFields.{{ .name }}"
+				@blur="validateField('{{ .name }}')"
+				:aria-invalid="getAriaInvalid('{{ .name }}')"
+				{{ if .placeholder }}placeholder="{{ .placeholder }}"{{ end }}
+			/>
+			{{ end }}
+		</label>
+		{{ end }}
+
+		<!-- Submit Button -->
+		<button type="submit" :disabled="loader" x-text="loader ? 'Invio...' : '{{ .Params.form.submitLabel | default "Invia" }}'">
+		</button>
+	</form>
+
+	<!-- Success Message -->
+	<div x-show="submitted && success" class="success message">
+		{{ if .Params.form.successMessage }}
+		{{ .Params.form.successMessage | markdownify }}
+		{{ else }}
+		<p>✅ <strong>Grazie!</strong> Il tuo messaggio è stato inviato con successo.</p>
+		{{ end }}
+	</div>
+
+	<!-- Error Message (Submission Failed) -->
+	<div x-show="submitted && !success" class="error message">
+		{{ if .Params.form.errorMessage }}
+		{{ .Params.form.errorMessage | markdownify }}
+		{{ else }}
+		<p>❌ <strong>Ops!</strong> Qualcosa è andato storto. Per favore riprova più tardi.</p>
+		{{ end }}
+	</div>
+
+</div>
+{{ end }}
+</div>
+{{ end }}
+
+</article>
+</main>
+
+{{ end }}

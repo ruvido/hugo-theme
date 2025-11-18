@@ -58,5 +58,5 @@ h1,h2 {
 
 
 li,p{line-height: var(--line-height);}
-p {padding-top:20px;}
-li p {padding-top:10px;}
+p {padding-top: 1.25rem;}
+li p {padding-top: 0.625rem;}

@@ -14,14 +14,7 @@
 			&nbsp; | &nbsp;
 			<a href="{{ $mp3File }}">scarica l'episodio</a>
 		</p>
-		<!-- <p> -->
-		<!-- 	{{ partial "components/spotifyPlayer.html" . }} -->
-		<!-- </p> -->
-
-		<center>
-		<audio controls 
-			src="{{ $mp3File }}"></audio>
-		</center>
+		<audio controls src="{{ $mp3File }}"></audio>
 
 		{{ with .Content }}
 			{{ . | safeHTML}}

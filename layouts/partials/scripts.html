@@ -4,8 +4,4 @@
 <script src="/js/pocketbase.umd.js"></script>
 {{ end }}
 <script src="/js/plyr.js"></script>
-<script>
-	document.addEventListener('DOMContentLoaded', () => {
-		const players = Array.from(document.querySelectorAll('audio')).map(p => new Plyr(p));
-	});
-</script>
+{{ partial "components/audio-player.html" . }}

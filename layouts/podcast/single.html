@@ -1,52 +1,739 @@
-{{ define "main" }}
 {{ $mp3File := .Params.file }}
 {{ $podcastConfig := "/content/podcast/_index.md" }}
-{{ $podcastData := readFile $podcastConfig | transform.Unmarshal  }}
+{{ $podcastData := readFile $podcastConfig | transform.Unmarshal }}
 {{ $mp3File = print "https://" $podcastData.storage $mp3File }}
+{{ $coverImage := print "/" $podcastData.cover }}
+{{ $author := $podcastData.author }}
+{{ $podcastPage := .Site.GetPage "/podcast" }}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{{ .Title }} | {{ site.Data.setup.title }}</title>
+	{{ partial "components/favicon.html"  | safeHTML}}
 
-<main>    
-	<article>
-		<h1> {{ .Title }}</h1>
-			<hr>
-		<p class="details">
-			<strong>season</strong> {{ .Params.season }}  
-			<strong>number</strong> {{ .Params.number }}
-			&nbsp; | &nbsp;
-			<a href="{{ $mp3File }}">scarica l'episodio</a>
-		</p>
-		<audio controls src="{{ $mp3File }}"></audio>
+	<!-- Pico CSS -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
 
-		{{ with .Content }}
-			{{ . | safeHTML}}
-		{{end}}
+	<!-- Alpine.js -->
+	<script defer src="/js/alpine-3.11.1.min.js"></script>
 
-		{{ with .Site.GetPage $podcastConfig }}
-		<hr>
-		{{.Content | safeHTML}}
-		{{end}}
+	<style>
+		:root {
+			--primary: #FFD700;
+			--primary-dark: #FFA500;
+			--card-max-width: 500px;
+		}
 
-		<hr>
-		<p>Ascolta il podcast anche su:</p>
-		<div class="icon-bar">
+		body {
+			background: #f5f5f5;
+			padding: 0;
+			margin: 0;
+			overflow: hidden;
+			height: 100vh;
+		}
 
-		{{ with .Site.Params.podcast.deezer }}
-		<a href="{{.}}">
-			<img src="/icons/podcast/deezer-podcast.png"></a>
-		{{ end }}
-		{{ with .Site.Params.podcast.spotify}}
-		<a href="{{.}}">
-			<img src="/icons/podcast/spotify-podcast.png"></a>
-		{{ end }}
-		{{ with .Site.Params.podcast.apple}}
-		<a href="{{.}}">
-		<img src="/icons/podcast/apple-podcast.png"></a>
-		{{ end }}
-		{{ with .Site.Params.podcast.google}}
-		<a href="{{.}}">
-		<img src="/icons/podcast/google-podcast.png"></a>
-		{{ end }}
+		.podcast-card {
+			max-width: var(--card-max-width);
+			margin: 0 auto;
+			background: white;
+			border-radius: 16px;
+			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+			height: 100vh;
+			overflow: hidden;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.scrollable-wrapper {
+			flex: 1;
+			overflow-y: hidden;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.scrollable-wrapper.scrollable {
+			overflow-y: auto;
+			padding-bottom: 160px;
+		}
+
+		.cover {
+			width: 100%;
+			height: 45vh;
+			max-height: 550px;
+			position: relative;
+			flex-shrink: 0;
+			overflow: hidden;
+			border-radius: 0 0 48px 48px;
+		}
+
+		.cover::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background-size: cover;
+			background-position: center;
+			filter: blur(20px);
+			transform: scale(1.1);
+			z-index: 0;
+			border-radius: 0 0 48px 48px;
+		}
+
+		.cover::after {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background-size: contain;
+			background-repeat: no-repeat;
+			background-position: center;
+			z-index: 1;
+			border-radius: 0 0 48px 48px;
+		}
+
+		.content-section {
+			padding: 1.5rem;
+		}
+
+		.author {
+			color: #666;
+			font-size: 0.9rem;
+			margin-bottom: 0.5rem;
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+		}
+
+		.author-avatar {
+			width: 32px;
+			height: 32px;
+			border-radius: 50%;
+			object-fit: cover;
+		}
+
+		.title {
+			font-size: 1.8rem;
+			font-weight: 700;
+			margin: 0 0 0.5rem 0;
+			line-height: 1.2;
+		}
+
+		.meta {
+			color: #999;
+			font-size: 0.85rem;
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+			margin-bottom: 1rem;
+		}
+
+		.description {
+			margin-bottom: 1.5rem;
+			line-height: 1.6;
+			color: #555;
+			display: flex;
+			flex-wrap: wrap;
+			align-items: baseline;
+			justify-content: space-between;
+		}
+
+		.description-content {
+			display: inline;
+			flex: 0 1 auto;
+		}
+
+		.description-full {
+			display: none;
+			width: 100%;
+		}
+
+		.description-full.expanded {
+			display: block;
+		}
+
+		.more-link {
+			background: none;
+			border: none;
+			color: #333;
+			font-weight: 700;
+			cursor: pointer;
+			padding: 0;
+			margin-left: auto;
+			white-space: nowrap;
+			text-align: right;
+		}
+
+		.more-link:hover {
+			color: var(--primary-dark);
+		}
+
+		.collapse-btn {
+			background: var(--primary);
+			border: none;
+			color: #000;
+			font-weight: 700;
+			cursor: pointer;
+			padding: 0.75rem 1.5rem;
+			border-radius: 24px;
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+			margin: 1rem auto;
+			transition: all 0.2s ease;
+		}
+
+		.collapse-btn:hover {
+			background: var(--primary-dark);
+			transform: scale(1.05);
+		}
+
+		.collapse-btn:active {
+			transform: scale(0.95);
+		}
+
+		.collapse-btn svg {
+			width: 20px;
+			height: 20px;
+		}
+
+		.waveform-container {
+			display: flex;
+			align-items: center;
+			gap: 0;
+			margin: 1rem 0;
+		}
+
+		.waveform {
+			height: 40px;
+			flex: 1;
+			background: transparent;
+			border-radius: 8px;
+			position: relative;
+			cursor: pointer;
+			margin: 0 0.25rem;
+		}
+
+		.waveform-bars {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			height: 100%;
+			gap: 2px;
+			padding: 0 0.5rem;
+		}
+
+		.time-label {
+			font-size: 0.75rem;
+			color: #999;
+			font-variant-numeric: tabular-nums;
+			white-space: nowrap;
+			flex: 0 0 auto;
+			min-width: 45px;
+		}
+
+		.time-label:first-child {
+			padding-right: 0.25rem;
+		}
+
+		.time-label:last-child {
+			text-align: right;
+			padding-left: 0.25rem;
+		}
+
+		.waveform-bar {
+			flex: 1;
+			background: #ddd;
+			border-radius: 3px;
+			min-width: 3px;
+			transition: all 0.2s ease;
+			opacity: 0.7;
+		}
+
+		.waveform-bar:hover {
+			opacity: 1;
+		}
+
+		.waveform-bar.played {
+			background: #333;
+			opacity: 1;
+		}
+
+
+		.platforms {
+			text-align: center;
+			padding-top: 1rem;
+			border-top: 1px solid #eee;
+		}
+
+		.platforms-title {
+			font-size: 0.9rem;
+			color: #666;
+			margin-bottom: 1rem;
+		}
+
+		.icon-bar {
+			display: flex;
+			justify-content: center;
+			gap: 1rem;
+			flex-wrap: wrap;
+		}
+
+		.icon-bar img {
+			width: 48px;
+			height: 48px;
+			transition: transform 0.2s;
+		}
+
+		.icon-bar img:hover {
+			transform: scale(1.1);
+		}
+
+		/* Fixed Player */
+		.fixed-player {
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			background: #1a1a1a;
+			border-top: 1px solid #333;
+			box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+			z-index: 1000;
+			padding: 0.75rem 0;
+		}
+
+		.player-controls {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			max-width: var(--card-max-width);
+			margin: 0 auto;
+			padding: 0 1rem;
+			position: relative;
+		}
+
+		.player-controls-center {
+			display: flex;
+			align-items: center;
+			gap: 2rem;
+		}
+
+		.speed-control-wrapper {
+			position: absolute;
+			right: 1rem;
+		}
+
+		.control-btn {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: transparent;
+			border: none;
+			cursor: pointer;
+			padding: 0.5rem;
+			border-radius: 50%;
+			transition: all 0.2s ease;
+			color: #fff;
+		}
+
+		.control-btn:hover {
+			background: rgba(255, 255, 255, 0.1);
+		}
+
+		.control-btn:active {
+			transform: scale(0.95);
+		}
+
+		.play-btn {
+			width: 64px;
+			height: 64px;
+			background: #FFD700;
+			border-radius: 50%;
+			padding: 0;
+			position: relative;
+		}
+
+		.play-btn:hover {
+			background: #FFC700;
+		}
+
+		.play-btn svg {
+			display: none;
+		}
+
+		.play-btn::after {
+			content: '';
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-40%, -50%);
+			width: 0;
+			height: 0;
+			border-style: solid;
+			border-width: 14px 0 14px 22px;
+			border-color: transparent transparent transparent #000;
+			transition: all 0.2s ease;
+		}
+
+		.play-btn.playing::after {
+			border: none;
+			width: 20px;
+			height: 24px;
+			background: linear-gradient(to right, #000 0%, #000 30%, transparent 30%, transparent 70%, #000 70%, #000 100%);
+			transform: translate(-50%, -50%);
+			transition: all 0.2s ease;
+		}
+
+		.skip-btn {
+			width: 48px;
+			height: 48px;
+		}
+
+		.speed-btn {
+			width: 48px;
+			height: 48px;
+			font-size: 14px;
+			font-weight: 600;
+			color: #FFD700;
+		}
+
+		/* Sticky Scroll Toggle Button */
+		.scroll-toggle-btn {
+			position: fixed;
+			bottom: 160px;
+			right: 1rem;
+			width: 56px;
+			height: 56px;
+			background: transparent;
+			border: none;
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+			z-index: 1001;
+			transition: all 0.3s ease;
+		}
+
+		.scroll-toggle-btn:hover {
+			background: rgba(0, 0, 0, 0.1);
+			transform: scale(1.05);
+		}
+
+		.scroll-toggle-btn:active {
+			transform: scale(0.95);
+		}
+
+		.scroll-toggle-btn svg {
+			filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.3));
+			display: block;
+		}
+
+		.scroll-toggle-btn svg path {
+			stroke: #000;
+			stroke-width: 3;
+		}
+
+		/* Back Button */
+		.back-btn {
+			position: fixed;
+			top: 0.5rem;
+			left: 0.5rem;
+			width: 40px;
+			height: 40px;
+			background: transparent;
+			border: none;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+			z-index: 999;
+			transition: all 0.3s ease;
+			text-decoration: none;
+			color: #333;
+		}
+
+		.back-btn:hover {
+			transform: scale(1.1);
+		}
+
+		.back-btn:active {
+			transform: scale(0.95);
+		}
+
+		.back-btn svg {
+			color: #333;
+			filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+		}
+
+		.fixed-player-content {
+			max-width: var(--card-max-width);
+			margin: 0 auto;
+			position: relative;
+			padding: 0 0.5rem;
+			box-sizing: border-box;
+		}
+
+		@media (max-width: 767px) {
+			.podcast-card {
+				border-radius: 0;
+				min-height: 100vh;
+			}
+
+			.scrollable-wrapper {
+				border-radius: 0;
+			}
+
+			.scroll-toggle-btn {
+				right: 0.75rem;
+				bottom: 150px;
+			}
+		}
+	</style>
+</head>
+<body>
+	<div class="podcast-card" x-data="{
+		expanded: false,
+		playing: false,
+		currentTime: 0,
+		duration: 0,
+		speedIndex: 0,
+		speeds: [1, 1.25, 1.5, 2],
+		numBars: 50,
+		charLimit: 30,
+		fullText: '',
+
+		init() {
+			const audio = this.$refs.audio;
+			audio.addEventListener('loadedmetadata', () => { this.duration = audio.duration; });
+			audio.addEventListener('timeupdate', () => { this.currentTime = audio.currentTime; });
+			audio.addEventListener('play', () => { this.playing = true; });
+			audio.addEventListener('pause', () => { this.playing = false; });
+			audio.addEventListener('ended', () => { this.playing = false; });
+
+			// Get full text from hidden element
+			if (this.$refs.fullTextContent) {
+				this.fullText = this.$refs.fullTextContent.textContent.trim();
+			}
+
+			this.updateBars();
+			this.updateCharLimit();
+			window.addEventListener('resize', () => {
+				this.updateBars();
+				this.updateCharLimit();
+			});
+		},
+
+		updateBars() {
+			const width = window.innerWidth;
+			if (width < 400) {
+				this.numBars = 25;
+			} else if (width < 500) {
+				this.numBars = 35;
+			} else {
+				this.numBars = 50;
+			}
+		},
+
+		updateCharLimit() {
+			const height = window.innerHeight;
+			// Calculate character limit based on screen height
+			// Small screens (< 650px): 30 chars
+			// Medium screens (650-800px): 80 chars
+			// Large screens (> 800px): 120 chars
+			if (height < 650) {
+				this.charLimit = 30;
+			} else if (height < 800) {
+				this.charLimit = 80;
+			} else {
+				this.charLimit = 120;
+			}
+		},
+
+		formatTime(seconds) {
+			if (isNaN(seconds)) return '0:00';
+			const mins = Math.floor(seconds / 60);
+			const secs = Math.floor(seconds % 60);
+			return mins + ':' + (secs < 10 ? '0' : '') + secs;
+		},
+
+		getProgress() {
+			if (this.duration === 0) return 0;
+			return (this.currentTime / this.duration) * 100;
+		},
+
+		seekToBar(index) {
+			if (this.duration === 0) return;
+			const percentage = index / this.numBars;
+			const audio = this.$refs.audio;
+			audio.currentTime = this.duration * percentage;
+		},
+
+		getTruncatedText() {
+			if (!this.fullText) return '';
+			if (this.fullText.length <= this.charLimit) return this.fullText;
+			return this.fullText.substring(0, this.charLimit).trim() + '...';
+		}
+	}">
+		<!-- Hidden Audio Element -->
+		<audio x-ref="audio" src="{{ $mp3File }}" preload="metadata"></audio>
+
+		<!-- Back Button -->
+		<a href="/" class="back-btn" aria-label="Back to home">
+			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+		</a>
+
+		<!-- Scrollable Wrapper for Cover + Content -->
+		<div class="scrollable-wrapper" :class="{ 'scrollable': expanded }" x-ref="scrollWrapper">
+			<!-- Cover Image -->
+			<div class="cover" style="--cover-url: url('{{ $coverImage }}')">
+				<style>
+					.cover::before { background-image: var(--cover-url); }
+					.cover::after { background-image: var(--cover-url); }
+				</style>
+			</div>
+
+			<!-- Content Section -->
+			<div class="content-section">
+				<!-- Author -->
+				<div class="author">
+					<img src="/images/realmen-100.jpg" alt="Author" class="author-avatar">
+					<span>{{ $author }}</span>
+				</div>
+
+				<!-- Title -->
+				<h1 class="title">{{ .Title }}</h1>
+
+				<!-- Episode Metadata -->
+				<div class="meta">Season {{ .Params.season }} · Episode {{ .Params.number }}</div>
+
+				<!-- Description -->
+				<div class="description">
+					<!-- Hidden full text reference -->
+					<div x-ref="fullTextContent" style="display: none;">{{ with .Content }}{{ . | plainify }}{{ else }}{{ with $podcastPage }}{{ .Content | plainify }}{{ end }}{{ end }}</div>
+
+					<!-- Truncated text shown when not expanded -->
+					<span class="description-content" x-show="!expanded" x-text="getTruncatedText()">
+					</span>
+
+					<!-- Full HTML content shown when expanded -->
+					<div class="description-full" :class="{ 'expanded': expanded }">
+						{{ with .Content }}
+							{{ . | safeHTML }}
+						{{ else }}
+							{{ with $podcastPage }}
+								{{ .Content | safeHTML }}
+							{{ end }}
+						{{ end }}
+					</div>
+				</div>
+
+				<!-- Platform Links -->
+				<div class="platforms" x-show="expanded">
+					<p class="platforms-title">Ascolta anche su:</p>
+					<div class="icon-bar">
+						{{ with .Site.Params.podcast.deezer }}
+						<a href="{{ . }}">
+							<img src="/icons/podcast/deezer-podcast.png" alt="Deezer">
+						</a>
+						{{ end }}
+						{{ with .Site.Params.podcast.spotify }}
+						<a href="{{ . }}">
+							<img src="/icons/podcast/spotify-podcast.png" alt="Spotify">
+						</a>
+						{{ end }}
+						{{ with .Site.Params.podcast.apple }}
+						<a href="{{ . }}">
+							<img src="/icons/podcast/apple-podcast.png" alt="Apple Podcasts">
+						</a>
+						{{ end }}
+						{{ with .Site.Params.podcast.google }}
+						<a href="{{ . }}">
+							<img src="/icons/podcast/google-podcast.png" alt="Google Podcasts">
+						</a>
+						{{ end }}
+					</div>
+				</div>
+			</div>
 		</div>
-	</article>
 
-</main>                                            
-{{ end }}      
+		<!-- Sticky Scroll Toggle Button -->
+		<button
+			class="scroll-toggle-btn"
+			@click="if (expanded) {
+				expanded = false;
+				$refs.scrollWrapper.scrollTop = 0;
+			} else {
+				expanded = true;
+				$nextTick(() => {
+					setTimeout(() => {
+						$refs.scrollWrapper.scrollTo({ top: 80, behavior: 'smooth' });
+					}, 50);
+				});
+			}"
+			:aria-label="expanded ? 'Collapse description' : 'Expand description'"
+		>
+			<svg x-show="!expanded" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+			<svg x-show="expanded" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+		</button>
+
+		<!-- Fixed Player Controls -->
+		<div class="fixed-player">
+			<div class="fixed-player-content">
+				<!-- Waveform with Time Display -->
+				<div class="waveform-container">
+					<span class="time-label" x-text="formatTime(currentTime)">0:00</span>
+					<div class="waveform">
+						<div class="waveform-bars">
+							<template x-for="i in numBars" :key="i">
+								<div
+									class="waveform-bar"
+									:class="{ 'played': getProgress() > ((i-1) / numBars * 100) }"
+									:style="'height: ' + (Math.random() * 60 + 20) + '%'"
+									@click="seekToBar(i-1)"
+								></div>
+							</template>
+						</div>
+					</div>
+					<span class="time-label" x-text="formatTime(duration)">0:00</span>
+				</div>
+
+				<!-- Player Controls -->
+				<div class="player-controls">
+					<!-- Center Group: Rewind, Play, Forward -->
+					<div class="player-controls-center">
+						<!-- Rewind 10s -->
+						<button class="control-btn skip-btn" @click="$refs.audio.currentTime -= 10" aria-label="Rewind 10 seconds">
+							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+						</button>
+
+						<!-- Play/Pause Button -->
+						<button class="control-btn play-btn" :class="{ 'playing': playing }" @click="playing ? $refs.audio.pause() : $refs.audio.play()" aria-label="Play/Pause"></button>
+
+						<!-- Forward 30s -->
+						<button class="control-btn skip-btn" @click="$refs.audio.currentTime += 30" aria-label="Forward 30 seconds">
+							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+						</button>
+					</div>
+
+					<!-- Speed Control (Right, Absolute) -->
+					<div class="speed-control-wrapper">
+						<button
+							class="control-btn speed-btn"
+							@click="speedIndex = (speedIndex + 1) % speeds.length; $refs.audio.playbackRate = speeds[speedIndex]"
+							x-text="speeds[speedIndex] + '×'"
+							aria-label="Playback speed"
+						>
+							1×
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

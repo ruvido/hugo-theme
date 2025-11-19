@@ -322,6 +322,40 @@
 			gap: 2rem;
 		}
 
+		.download-control {
+			position: absolute;
+			left: 1rem;
+		}
+
+		.download-btn {
+			width: 48px;
+			height: 48px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: transparent;
+			border: none;
+			cursor: pointer;
+			padding: 0.5rem;
+			border-radius: 50%;
+			transition: all 0.2s ease;
+			font-size: 14px;
+			font-weight: 600;
+			color: #FFD700;
+		}
+
+		.download-btn:hover {
+			background: rgba(255, 255, 255, 0.1);
+		}
+
+		.download-btn:active {
+			transform: scale(0.95);
+		}
+
+		.download-btn svg {
+			stroke: #FFD700;
+		}
+
 		.speed-control-wrapper {
 			position: absolute;
 			right: 1rem;
@@ -706,6 +740,13 @@
 
 				<!-- Player Controls -->
 				<div class="player-controls">
+					<!-- Download Control (Left) -->
+					<div class="download-control">
+						<a :href="$refs.audio.src" download class="download-btn" aria-label="Download episode">
+							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+						</a>
+					</div>
+
 					<!-- Center Group: Rewind, Play, Forward -->
 					<div class="player-controls-center">
 						<!-- Rewind 10s -->
@@ -722,7 +763,7 @@
 						</button>
 					</div>
 
-					<!-- Speed Control (Right, Absolute) -->
+					<!-- Speed Control (Right) -->
 					<div class="speed-control-wrapper">
 						<button
 							class="control-btn speed-btn"

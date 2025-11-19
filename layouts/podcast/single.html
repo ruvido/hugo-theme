@@ -515,9 +515,11 @@
 			audio.addEventListener('pause', () => { this.playing = false; });
 			audio.addEventListener('ended', () => { this.playing = false; });
 
-			// Get full text from hidden element
+			// Get full text from hidden element and decode HTML entities
 			if (this.$refs.fullTextContent) {
-				this.fullText = this.$refs.fullTextContent.textContent.trim();
+				const parser = new DOMParser();
+				const decoded = parser.parseFromString(this.$refs.fullTextContent.textContent, 'text/html');
+				this.fullText = decoded.documentElement.textContent.trim();
 			}
 
 			this.updateBars();

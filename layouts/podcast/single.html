@@ -24,6 +24,7 @@
 			--primary: #FFD700;
 			--primary-dark: #FFA500;
 			--card-max-width: 500px;
+			--content-max-width: 700px;
 		}
 
 		body {
@@ -32,6 +33,7 @@
 			margin: 0;
 			overflow: hidden;
 			height: 100vh;
+			color-scheme: light;
 		}
 
 		.podcast-card {
@@ -525,6 +527,42 @@
 			.scroll-toggle-btn {
 				right: 0.75rem;
 				bottom: 150px;
+			}
+		}
+
+		/* Tablet & Desktop: Full-width cover, centered content */
+		@media (min-width: 768px) {
+			.podcast-card {
+				max-width: 100%;
+				border-radius: 0;
+				box-shadow: none;
+			}
+
+			.cover {
+				width: 100vw;
+				margin-left: calc(-50vw + 50%);
+				border-radius: 0;
+			}
+
+			.cover::before,
+			.cover::after {
+				border-radius: 0;
+			}
+
+			.content-section {
+				max-width: var(--content-max-width);
+				margin: 0 auto;
+				padding: 2rem 1.5rem;
+			}
+
+			.waveform-container {
+				max-width: var(--content-max-width);
+				margin-left: auto;
+				margin-right: auto;
+			}
+
+			.fixed-player-content {
+				max-width: var(--content-max-width);
 			}
 		}
 	</style>

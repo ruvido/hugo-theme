@@ -5,6 +5,14 @@
 {{ $coverImage := print "/" $podcastData.cover }}
 {{ $author := $podcastData.author }}
 {{ $podcastPage := .Site.GetPage "/podcast" }}
+{{ $coverRes := resources.Get (strings.TrimPrefix "/" $coverImage) }}
+{{ $dominantColor := "#1a1a1a" }}
+{{ with $coverRes }}
+	{{ $colors := .Colors }}
+	{{ if $colors }}
+		{{ $dominantColor = index $colors 0 }}
+	{{ end }}
+{{ end }}
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -40,8 +48,6 @@
 			max-width: var(--card-max-width);
 			margin: 0 auto;
 			background: white;
-			border-radius: 16px;
-			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 			height: 100vh;
 			overflow: hidden;
 			display: flex;
@@ -62,41 +68,20 @@
 
 		.cover {
 			width: 100%;
-			height: 45vh;
+			height: 35vh;
 			max-height: 550px;
-			position: relative;
 			flex-shrink: 0;
-			overflow: hidden;
 			border-radius: 0 0 48px 48px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			box-sizing: border-box;
 		}
 
-		.cover::before {
-			content: '';
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 0;
-			background-size: cover;
-			background-position: center;
-			filter: blur(20px);
-			transform: scale(1.1);
-			z-index: 0;
-			border-radius: 0 0 48px 48px;
-		}
-
-		.cover::after {
-			content: '';
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 0;
-			background-size: contain;
-			background-repeat: no-repeat;
-			background-position: center;
-			z-index: 1;
-			border-radius: 0 0 48px 48px;
+		.cover img {
+			height: 100%;
+			width: auto;
+			object-fit: contain;
 		}
 
 		.content-section {
@@ -126,81 +111,37 @@
 			line-height: 1.2;
 		}
 
+		.meta-with-icons {
+			display: flex;
+			align-items: center;
+			gap: 1rem;
+			margin-bottom: 1rem;
+			flex-wrap: wrap;
+		}
+
 		.meta {
 			color: #999;
 			font-size: 0.85rem;
 			text-transform: uppercase;
 			letter-spacing: 0.5px;
-			margin-bottom: 1rem;
 		}
 
 		.description {
 			margin-bottom: 1.5rem;
 			line-height: 1.6;
 			color: #555;
-			display: flex;
-			flex-wrap: wrap;
-			align-items: baseline;
-			justify-content: space-between;
 		}
 
-		.description-content {
-			display: inline;
-			flex: 0 1 auto;
+		.description h1 {
+			font-size: 1.4rem;
+			margin-top: 1.5rem;
+			margin-bottom: 0.75rem;
 		}
 
-		.description-full {
-			display: none;
-			width: 100%;
-		}
-
-		.description-full.expanded {
-			display: block;
-		}
-
-		.more-link {
-			background: none;
-			border: none;
-			color: #333;
-			font-weight: 700;
-			cursor: pointer;
-			padding: 0;
-			margin-left: auto;
-			white-space: nowrap;
-			text-align: right;
-		}
-
-		.more-link:hover {
-			color: var(--primary-dark);
-		}
-
-		.collapse-btn {
-			background: var(--primary);
-			border: none;
-			color: #000;
-			font-weight: 700;
-			cursor: pointer;
-			padding: 0.75rem 1.5rem;
-			border-radius: 24px;
-			display: flex;
-			align-items: center;
-			gap: 0.5rem;
-			margin: 1rem auto;
-			transition: all 0.2s ease;
-		}
-
-		.collapse-btn:hover {
-			background: var(--primary-dark);
-			transform: scale(1.05);
-		}
-
-		.collapse-btn:active {
-			transform: scale(0.95);
-		}
-
-		.collapse-btn svg {
-			width: 20px;
-			height: 20px;
+		.description h2 {
+			font-size: 1.2rem;
+			margin-top: 1.25rem;
+			margin-bottom: 0.5rem;
 		}
 
 		.waveform-container {
@@ -266,33 +207,25 @@
 		}
 
 
-		.platforms {
-			text-align: center;
-			padding-top: 1rem;
-			border-top: 1px solid #eee;
-		}
-
-		.platforms-title {
-			font-size: 0.9rem;
-			color: #666;
-			margin-bottom: 1rem;
-		}
-
 		.icon-bar {
 			display: flex;
-			justify-content: center;
-			gap: 1rem;
-			flex-wrap: wrap;
+			gap: 0.5rem;
+			align-items: center;
 		}
 
-		.icon-bar img {
-			width: 48px;
-			height: 48px;
+		.icon-bar a {
+			display: block;
+			line-height: 0;
+		}
+
+		.icon-bar svg {
+			width: 28px;
+			height: 28px;
 			transition: transform 0.2s;
 		}
 
-		.icon-bar img:hover {
-			transform: scale(1.1);
+		.icon-bar a:hover svg {
+			transform: scale(1.15);
 		}
 
 		/* Fixed Player */
@@ -310,57 +243,12 @@
 
 		.player-controls {
 			display: flex;
-			justify-content: center;
+			justify-content: space-between;
 			align-items: center;
 			max-width: var(--card-max-width);
 			margin: 0 auto;
 			padding: 0 1rem;
-			position: relative;
-		}
-
-		.player-controls-center {
-			display: flex;
-			align-items: center;
-			gap: 2rem;
-		}
-
-		.download-control {
-			position: absolute;
-			left: 1rem;
-		}
-
-		.download-btn {
-			width: 48px;
-			height: 48px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			background: transparent;
-			border: none;
-			cursor: pointer;
-			padding: 0.5rem;
-			border-radius: 50%;
-			transition: all 0.2s ease;
-			font-size: 14px;
-			font-weight: 600;
-			color: #FFD700;
-		}
-
-		.download-btn:hover {
-			background: rgba(255, 255, 255, 0.1);
-		}
-
-		.download-btn:active {
-			transform: scale(0.95);
-		}
-
-		.download-btn svg {
-			stroke: #FFD700;
-		}
-
-		.speed-control-wrapper {
-			position: absolute;
-			right: 1rem;
+			gap: 1rem;
 		}
 
 		.control-btn {
@@ -437,43 +325,6 @@
 			color: #FFD700;
 		}
 
-		/* Sticky Scroll Toggle Button */
-		.scroll-toggle-btn {
-			position: fixed;
-			bottom: 160px;
-			right: 1rem;
-			width: 56px;
-			height: 56px;
-			background: transparent;
-			border: none;
-			border-radius: 50%;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			cursor: pointer;
-			z-index: 1001;
-			transition: all 0.3s ease;
-		}
-
-		.scroll-toggle-btn:hover {
-			background: rgba(0, 0, 0, 0.1);
-			transform: scale(1.05);
-		}
-
-		.scroll-toggle-btn:active {
-			transform: scale(0.95);
-		}
-
-		.scroll-toggle-btn svg {
-			filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.3));
-			display: block;
-		}
-
-		.scroll-toggle-btn svg path {
-			stroke: #000;
-			stroke-width: 3;
-		}
-
 		/* Back Button */
 		.back-btn {
 			position: fixed;
@@ -514,19 +365,17 @@
 			box-sizing: border-box;
 		}
 
+		/* Very narrow screens: hide skip buttons */
+		@media (max-width: 360px) {
+			.skip-btn {
+				display: none;
+			}
+		}
+
 		@media (max-width: 767px) {
 			.podcast-card {
-				border-radius: 0;
+				max-width: 100%;
 				min-height: 100vh;
-			}
-
-			.scrollable-wrapper {
-				border-radius: 0;
-			}
-
-			.scroll-toggle-btn {
-				right: 0.75rem;
-				bottom: 150px;
 			}
 		}
 
@@ -542,12 +391,11 @@
 				width: 100vw;
 				margin-left: calc(-50vw + 50%);
 				border-radius: 0;
+				height: 60vh;
+				max-height: 700px;
+				padding: 3rem;
 			}
 
-			.cover::before,
-			.cover::after {
-				border-radius: 0;
-			}
 
 			.content-section {
 				max-width: var(--content-max-width);
@@ -569,36 +417,43 @@
 </head>
 <body>
 	<div class="podcast-card" x-data="{
-		expanded: false,
 		playing: false,
 		currentTime: 0,
 		duration: 0,
 		speedIndex: 0,
 		speeds: [1, 1.25, 1.5, 2],
 		numBars: 50,
-		charLimit: 30,
-		fullText: '',
+		episodeId: '{{ .Params.season }}-{{ .Params.number }}',
 
 		init() {
 			const audio = this.$refs.audio;
-			audio.addEventListener('loadedmetadata', () => { this.duration = audio.duration; });
-			audio.addEventListener('timeupdate', () => { this.currentTime = audio.currentTime; });
+			audio.addEventListener('loadedmetadata', () => {
+				this.duration = audio.duration;
+
+				// Ripristina posizione salvata
+				const saved = localStorage.getItem(`podcast_${this.episodeId}`);
+				if (saved && parseFloat(saved) > 5) {
+					audio.currentTime = parseFloat(saved);
+				}
+			});
+			audio.addEventListener('timeupdate', () => {
+				this.currentTime = audio.currentTime;
+
+				// Salva posizione ogni 10 secondi
+				if (Math.floor(audio.currentTime) % 10 === 0) {
+					localStorage.setItem(`podcast_${this.episodeId}`, audio.currentTime);
+				}
+			});
 			audio.addEventListener('play', () => { this.playing = true; });
 			audio.addEventListener('pause', () => { this.playing = false; });
-			audio.addEventListener('ended', () => { this.playing = false; });
-
-			// Get full text from hidden element and decode HTML entities
-			if (this.$refs.fullTextContent) {
-				const parser = new DOMParser();
-				const decoded = parser.parseFromString(this.$refs.fullTextContent.textContent, 'text/html');
-				this.fullText = decoded.documentElement.textContent.trim();
-			}
+			audio.addEventListener('ended', () => {
+				this.playing = false;
+				localStorage.removeItem(`podcast_${this.episodeId}`);
+			});
 
 			this.updateBars();
-			this.updateCharLimit();
 			window.addEventListener('resize', () => {
 				this.updateBars();
-				this.updateCharLimit();
 			});
 		},
 
@@ -606,25 +461,10 @@
 			const width = window.innerWidth;
 			if (width < 400) {
 				this.numBars = 25;
-			} else if (width < 500) {
-				this.numBars = 35;
+			} else if (width < 768) {
+				this.numBars = 40;
 			} else {
-				this.numBars = 50;
-			}
-		},
-
-		updateCharLimit() {
-			const height = window.innerHeight;
-			// Calculate character limit based on screen height
-			// Small screens (< 650px): 30 chars
-			// Medium screens (650-800px): 80 chars
-			// Large screens (> 800px): 120 chars
-			if (height < 650) {
-				this.charLimit = 30;
-			} else if (height < 800) {
-				this.charLimit = 80;
-			} else {
-				this.charLimit = 120;
+				this.numBars = 60;
 			}
 		},
 
@@ -645,12 +485,6 @@
 			const percentage = index / this.numBars;
 			const audio = this.$refs.audio;
 			audio.currentTime = this.duration * percentage;
-		},
-
-		getTruncatedText() {
-			if (!this.fullText) return '';
-			if (this.fullText.length <= this.charLimit) return this.fullText;
-			return this.fullText.substring(0, this.charLimit).trim() + '...';
 		}
 	}">
 		<!-- Hidden Audio Element -->
@@ -662,13 +496,10 @@
 		</a>
 
 		<!-- Scrollable Wrapper for Cover + Content -->
-		<div class="scrollable-wrapper" :class="{ 'scrollable': expanded }" x-ref="scrollWrapper">
+		<div class="scrollable-wrapper scrollable" x-ref="scrollWrapper">
 			<!-- Cover Image -->
-			<div class="cover" style="--cover-url: url('{{ $coverImage }}')">
-				<style>
-					.cover::before { background-image: var(--cover-url); }
-					.cover::after { background-image: var(--cover-url); }
-				</style>
+			<div class="cover" style="background-color: {{ $dominantColor }};">
+				<img src="{{ $coverImage }}" alt="{{ .Title }}">
 			</div>
 
 			<!-- Content Section -->
@@ -682,78 +513,43 @@
 				<!-- Title -->
 				<h1 class="title">{{ .Title }}</h1>
 
-				<!-- Episode Metadata -->
-				<div class="meta">Season {{ .Params.season }} · Episode {{ .Params.number }}</div>
-
-				<!-- Description -->
-				<div class="description">
-					<!-- Hidden full text reference -->
-					<div x-ref="fullTextContent" style="display: none;">{{ with .Content }}{{ . | plainify }}{{ else }}{{ with $podcastPage }}{{ .Content | plainify }}{{ end }}{{ end }}</div>
-
-					<!-- Truncated text shown when not expanded -->
-					<span class="description-content" x-show="!expanded" x-text="getTruncatedText()">
-					</span>
-
-					<!-- Full HTML content shown when expanded -->
-					<div class="description-full" :class="{ 'expanded': expanded }">
-						{{ with .Content }}
-							{{ . | safeHTML }}
-						{{ else }}
-							{{ with $podcastPage }}
-								{{ .Content | safeHTML }}
-							{{ end }}
-						{{ end }}
-					</div>
-				</div>
-
-				<!-- Platform Links -->
-				<div class="platforms" x-show="expanded">
-					<p class="platforms-title">Ascolta anche su:</p>
+				<!-- Episode Metadata & Platform Icons -->
+				<div class="meta-with-icons">
+					<div class="meta">Season {{ .Params.season }} · Episode {{ .Params.number }}</div>
 					<div class="icon-bar">
-						{{ with .Site.Params.podcast.deezer }}
-						<a href="{{ . }}">
-							<img src="/icons/podcast/deezer-podcast.png" alt="Deezer">
-						</a>
-						{{ end }}
 						{{ with .Site.Params.podcast.spotify }}
-						<a href="{{ . }}">
-							<img src="/icons/podcast/spotify-podcast.png" alt="Spotify">
+						<a href="{{ . }}" aria-label="Spotify">
+							{{ partial "icons/spotify.html" }}
 						</a>
 						{{ end }}
 						{{ with .Site.Params.podcast.apple }}
-						<a href="{{ . }}">
-							<img src="/icons/podcast/apple-podcast.png" alt="Apple Podcasts">
+						<a href="{{ . }}" aria-label="Apple Podcasts">
+							{{ partial "icons/apple-podcasts.html" }}
 						</a>
 						{{ end }}
-						{{ with .Site.Params.podcast.google }}
-						<a href="{{ . }}">
-							<img src="/icons/podcast/google-podcast.png" alt="Google Podcasts">
+						<a href="/podcast.rss" aria-label="RSS Feed">
+							{{ partial "icons/rss.html" }}
+						</a>
+						{{ with .Site.Params.podcast.overcast }}
+						<a href="{{ . }}" aria-label="Overcast">
+							{{ partial "icons/overcast.html" }}
 						</a>
 						{{ end }}
 					</div>
 				</div>
+
+				<!-- Description -->
+				<div class="description">
+					{{ with .Content }}
+						{{ . | safeHTML }}
+					{{ else }}
+						{{ with $podcastPage }}
+							{{ .Content | safeHTML }}
+						{{ end }}
+					{{ end }}
+				</div>
 			</div>
 		</div>
-
-		<!-- Sticky Scroll Toggle Button -->
-		<button
-			class="scroll-toggle-btn"
-			@click="if (expanded) {
-				expanded = false;
-				$refs.scrollWrapper.scrollTop = 0;
-			} else {
-				expanded = true;
-				$nextTick(() => {
-					setTimeout(() => {
-						$refs.scrollWrapper.scrollTo({ top: 80, behavior: 'smooth' });
-					}, 50);
-				});
-			}"
-			:aria-label="expanded ? 'Collapse description' : 'Expand description'"
-		>
-			<svg x-show="!expanded" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-			<svg x-show="expanded" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
-		</button>
 
 		<!-- Fixed Player Controls -->
 		<div class="fixed-player">
@@ -778,40 +574,33 @@
 
 				<!-- Player Controls -->
 				<div class="player-controls">
-					<!-- Download Control (Left) -->
-					<div class="download-control">
-						<a :href="$refs.audio.src" download class="download-btn" aria-label="Download episode">
-							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-						</a>
-					</div>
+					<!-- Download -->
+					<a :href="$refs.audio.src" download class="control-btn" aria-label="Download episode">
+						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+					</a>
 
-					<!-- Center Group: Rewind, Play, Forward -->
-					<div class="player-controls-center">
-						<!-- Rewind 10s -->
-						<button class="control-btn skip-btn" @click="$refs.audio.currentTime -= 10" aria-label="Rewind 10 seconds">
-							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-						</button>
+					<!-- Rewind 10s -->
+					<button class="control-btn skip-btn" @click="$refs.audio.currentTime -= 10" aria-label="Rewind 10 seconds">
+						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+					</button>
 
-						<!-- Play/Pause Button -->
-						<button class="control-btn play-btn" :class="{ 'playing': playing }" @click="playing ? $refs.audio.pause() : $refs.audio.play()" aria-label="Play/Pause"></button>
+					<!-- Play/Pause -->
+					<button class="control-btn play-btn" :class="{ 'playing': playing }" @click="playing ? $refs.audio.pause() : $refs.audio.play()" aria-label="Play/Pause"></button>
 
-						<!-- Forward 30s -->
-						<button class="control-btn skip-btn" @click="$refs.audio.currentTime += 30" aria-label="Forward 30 seconds">
-							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
-						</button>
-					</div>
+					<!-- Forward 30s -->
+					<button class="control-btn skip-btn" @click="$refs.audio.currentTime += 30" aria-label="Forward 30 seconds">
+						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+					</button>
 
-					<!-- Speed Control (Right) -->
-					<div class="speed-control-wrapper">
-						<button
-							class="control-btn speed-btn"
-							@click="speedIndex = (speedIndex + 1) % speeds.length; $refs.audio.playbackRate = speeds[speedIndex]"
-							x-text="speeds[speedIndex] + '×'"
-							aria-label="Playback speed"
-						>
-							1×
-						</button>
-					</div>
+					<!-- Speed -->
+					<button
+						class="control-btn speed-btn"
+						@click="speedIndex = (speedIndex + 1) % speeds.length; $refs.audio.playbackRate = speeds[speedIndex]"
+						x-text="speeds[speedIndex] + '×'"
+						aria-label="Playback speed"
+					>
+						1×
+					</button>
 				</div>
 			</div>
 		</div>

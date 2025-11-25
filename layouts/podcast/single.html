@@ -27,6 +27,8 @@
 
 	<!-- Alpine.js -->
 	<script defer src="/js/alpine-3.11.1.min.js"></script>
+	<!-- Fuse.js for search -->
+	<script src="/js/fuse.min.js"></script>
 
 	<style>
 		:root {
@@ -259,6 +261,78 @@
 			opacity: 0.3;
 		}
 
+		/* Search Modal */
+		[x-cloak] { display: none !important; }
+
+		.search-overlay {
+			position: fixed;
+			inset: 0;
+			background: rgba(0,0,0,0.8);
+			z-index: 2000;
+			display: flex;
+			align-items: flex-start;
+			justify-content: center;
+			padding-top: 15vh;
+		}
+
+		.search-modal {
+			width: 90%;
+			max-width: 400px;
+		}
+
+		.search-modal input {
+			width: 100%;
+			padding: 1rem 3rem 1rem 1rem;
+			font-size: 1.1rem;
+			border: none;
+			border-radius: 8px;
+			margin: 0;
+		}
+
+		.search-input-wrapper {
+			position: relative;
+		}
+
+		.search-close {
+			position: absolute;
+			right: 0.75rem;
+			top: 0;
+			bottom: 0;
+			margin: auto;
+			height: 24px;
+			background: none;
+			border: none;
+			padding: 0;
+			cursor: pointer;
+			line-height: 0;
+		}
+
+		.search-results {
+			list-style: none;
+			margin: 0.5rem 0 0 0;
+			padding: 0;
+			background: white;
+			border-radius: 8px;
+			max-height: 50vh;
+			overflow-y: auto;
+		}
+
+		.search-results li a {
+			display: block;
+			padding: 0.75rem 1rem;
+			color: #333;
+			text-decoration: none;
+			border-bottom: 1px solid #eee;
+		}
+
+		.search-results li:last-child a {
+			border-bottom: none;
+		}
+
+		.search-results li a:hover {
+			background: #f5f5f5;
+		}
+
 		/* Fixed Player */
 		.fixed-player {
 			position: fixed;
@@ -460,8 +534,23 @@
 		numBars: 50,
 		episodeId: '{{ .Params.season }}-{{ .Params.number }}',
 		isScrolled: false,
+		searchOpen: false,
+		searchQuery: '',
+		searchResults: [],
+		episodes: [
+			{{- $episodes := where .Site.RegularPages "Type" "in" (slice "podcast" "newsletter" "articles") -}}
+			{{- range $i, $ep := $episodes }}{{ if $i }},{{ end }}
+			{ title: {{ $ep.Title | jsonify }}, url: {{ $ep.RelPermalink | jsonify }}, season: {{ $ep.Params.season | jsonify }}, number: {{ $ep.Params.number | jsonify }} }
+			{{- end }}
+		],
+		fuse: null,
 
 		init() {
+			// Init Fuse.js
+			this.fuse = new Fuse(this.episodes, {
+				keys: ['title'],
+				threshold: 0.4
+			});
 			const audio = this.$refs.audio;
 			audio.addEventListener('loadedmetadata', () => {
 				this.duration = audio.duration;
@@ -527,6 +616,25 @@
 			const percentage = index / this.numBars;
 			const audio = this.$refs.audio;
 			audio.currentTime = this.duration * percentage;
+		},
+
+		search() {
+			if (this.searchQuery.length < 2) {
+				this.searchResults = [];
+				return;
+			}
+			this.searchResults = this.fuse.search(this.searchQuery).slice(0, 10);
+		},
+
+		openSearch() {
+			this.searchOpen = true;
+			this.$nextTick(() => this.$refs.searchInput.focus());
+		},
+
+		closeSearch() {
+			this.searchOpen = false;
+			this.searchQuery = '';
+			this.searchResults = [];
 		}
 	}">
 		<!-- Hidden Audio Element -->
@@ -537,10 +645,34 @@
 			<a href="/" aria-label="Back to home">
 				{{ partial "icons/x.html" }}
 			</a>
-			<button aria-label="Search">
+			<button @click="openSearch()" aria-label="Search">
 				{{ partial "icons/search.html" }}
 			</button>
 		</nav>
+
+		<!-- Search Modal -->
+		<div x-show="searchOpen" x-cloak class="search-overlay" @click.self="closeSearch()" @keydown.escape.window="closeSearch()">
+			<div class="search-modal">
+				<div class="search-input-wrapper">
+					<input
+						x-ref="searchInput"
+						x-model="searchQuery"
+						@input="search()"
+						type="text"
+						placeholder="Cerca episodi..."
+						autocomplete="off"
+					>
+					<button @click="closeSearch()" class="search-close">{{ partial "icons/x.html" }}</button>
+				</div>
+				<ul x-show="searchResults.length > 0" class="search-results">
+					<template x-for="result in searchResults" :key="result.item.url">
+						<li>
+							<a :href="result.item.url" x-text="(result.item.season ? 'S' + result.item.season + 'E' + result.item.number + ' - ' : '') + result.item.title"></a>
+						</li>
+					</template>
+				</ul>
+			</div>
+		</div>
 
 		<!-- Scrollable Wrapper for Cover + Content -->
 		<div class="scrollable-wrapper scrollable" x-ref="scrollWrapper">

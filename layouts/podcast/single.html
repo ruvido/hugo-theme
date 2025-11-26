@@ -520,7 +520,7 @@
 		episodes: [
 			{{- $episodes := where .Site.RegularPages "Type" "in" (slice "podcast" "newsletter" "articles") -}}
 			{{- range $i, $ep := $episodes }}{{ if $i }},{{ end }}
-			{ title: {{ $ep.Title | jsonify }}, url: {{ $ep.RelPermalink | jsonify }}, season: {{ $ep.Params.season | jsonify }}, number: {{ $ep.Params.number | jsonify }} }
+			{ title: {{ $ep.Title | jsonify }}, description: {{ $ep.Plain | truncate 500 | jsonify }}, keywords: {{ delimit ($ep.Params.keywords | default slice) " " | jsonify }}, tags: {{ delimit ($ep.Params.tags | default slice) " " | jsonify }}, url: {{ $ep.RelPermalink | jsonify }}, season: {{ $ep.Params.season | jsonify }}, number: {{ $ep.Params.number | jsonify }} }
 			{{- end }}
 		],
 		fuse: null,
@@ -528,8 +528,15 @@
 		init() {
 			// Init Fuse.js
 			this.fuse = new Fuse(this.episodes, {
-				keys: ['title'],
-				threshold: 0.4
+				keys: [
+					{ name: 'keywords', weight: 3 },
+					{ name: 'tags', weight: 3 },
+					{ name: 'title', weight: 2 },
+					{ name: 'description', weight: 1 }
+				],
+				threshold: 0.2,
+				ignoreLocation: true,
+				minMatchCharLength: 2
 			});
 			const audio = this.$refs.audio;
 			audio.addEventListener('loadedmetadata', () => {

@@ -1,20 +1,19 @@
+<section>
+	<h2>Podcast</h2>
+	<ul>
+		{{ range (where .Site.RegularPages "Type" "eq" "podcast") }}
+		<li><a href="{{ .Permalink }}">{{ .Title }}</a></li>
+		{{ end }}
+	</ul>
+</section>
 
-<h2>Podcast</h2>
-<ul>
-{{ range (where .Site.RegularPages "Type" "eq" "podcast") }}
-<!-- <li>{{.Title}} - {{ .Type }}</li> -->
-<li>
-	<a href="{{.Permalink}}">{{.Title}}</a></li>
-{{end}}
-</ul>
-<h2>Articoli</h2>
-<ul>
-{{ range (where .Site.RegularPages "Type" "eq" "articles") }}
-<li>
-	<a href="{{.Permalink}}">{{.Title}}</a></li>
-{{end}}
-</ul>
-
+<section>
+	<h2>Articoli</h2>
+	<ul>
+		{{ range (where .Site.RegularPages "Type" "eq" "articles") }}
+		<li><a href="{{ .Permalink }}">{{ .Title }}</a></li>
+		{{ end }}
+	</ul>
+</section>
 
 {{ partial "components/quote.html" (dict "quote" (index site.Data.quotes.sognare 0)) }}
-

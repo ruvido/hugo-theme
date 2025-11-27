@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light only">
+  <title>{{ .Title }} | {{ site.Data.setup.title }}</title>
+  {{ partial "components/favicon.html" | safeHTML }}
+
+  <!-- Pico CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+
+  <!-- Alpine.js + Fuse.js -->
+  <script defer src="/js/alpine-3.11.1.min.js"></script>
+  <script src="/js/fuse.min.js"></script>
+
+  <style>
+    @font-face {
+      font-family: "gagalin";
+      src: local("Gagalin"), url("/fonts/Gagalin-Regular.woff") format("woff");
+    }
+  @font-face {
+      font-family: "Inter UI";
+      font-weight: 100 900;
+      src: url("/fonts/Inter-3.19.var.woff2") format("woff2");
+    }
+
+    :root {
+      --primary: #ffde59;
+      --inverse: #1f1f1f;
+      --muted: #666666;
+      --line: #e0e0e0;
+      --hero-font: gagalin, sans-serif;
+      --pico-font-family: "Inter UI", system-ui, -apple-system, "Segoe UI", sans-serif;
+      --pico-border-radius: 8px;
+      --pico-line-height: 1.6;
+    }
+
+    body {
+      margin: 0;
+      background: white;
+      color: var(--inverse);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    [x-cloak] {
+      display: none !important;
+    }
+
+    body > header {
+      padding: 1.25rem 1.25rem 0.75rem;
+      background: var(--primary);
+      color: var(--inverse);
+    }
+
+    body > header nav {
+      background: transparent;
+      padding: 0;
+      margin: 0 0 0.6rem;
+    }
+
+    body > header nav ul {
+      align-items: center;
+    }
+
+    body > header a {
+      color: var(--inverse);
+    }
+
+    body > header h1 {
+      margin: 0;
+      font-size: 1.6rem;
+      letter-spacing: -0.01em;
+    }
+
+    body > header p {
+      margin: 0.15rem 0 0;
+      color: var(--inverse);
+      opacity: 0.8;
+    }
+
+    body > header nav a:first-child {
+      font-family: var(--hero-font);
+      font-size: 1.4rem;
+      font-style: italic;
+      letter-spacing: 0.02em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    main {
+      padding: 1.25rem 1.25rem 2.6rem;
+      background: white;
+      display: grid;
+      gap: 1.8rem;
+    }
+
+    main > label {
+      margin: 0;
+      align-self: center;
+      width: min(520px, 100%);
+    }
+
+    main > label input[type="search"] {
+      margin: 0;
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--line);
+      border-radius: 0;
+      padding: 0.5rem 0;
+      box-shadow: none;
+    }
+
+    main > label input[type="search"]::-webkit-search-decoration,
+    main > label input[type="search"]::-webkit-search-cancel-button {
+      -webkit-appearance: none;
+    }
+
+    section > header {
+      display: flex;
+      align-items: baseline;
+      gap: 0.4rem;
+      margin-bottom: 0.6rem;
+    }
+
+    section > header h2 {
+      margin: 0;
+      line-height: 1.1;
+    }
+
+    section > header span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.16em 0.6rem;
+      border-radius: 999px;
+      background: var(--inverse);
+      color: white;
+      font-size: 0.8rem;
+      line-height: 1;
+      min-height: 1.35em;
+      align-self: baseline;
+      transform: translateY(-0.16em);
+    }
+
+    section ul {
+      list-style: none;
+      padding: 0 0.5rem;
+      margin: 0;
+    }
+
+    section ul li {
+      list-style: none;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    section ul li:last-child {
+      border-bottom: none;
+    }
+
+    section ul a {
+      text-decoration: none;
+      color: inherit;
+      display: inline-flex;
+      gap: 0.5rem;
+      align-items: baseline;
+    }
+
+    section ul small {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .season-divider {
+      list-style: none;
+      padding: 0.5rem 0 0.25rem;
+      border: none;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    main [data-empty] {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    footer {
+      background: var(--inverse);
+      color: var(--primary);
+      padding: 2.5rem 1.25rem 1.75rem;
+      margin-top: auto;
+    }
+
+    footer p:first-of-type {
+      font-family: var(--hero-font);
+      font-size: 1.5rem;
+      font-style: italic;
+      margin: 0 0 1.5rem;
+    }
+
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    footer menu {
+      padding: 0;
+      margin: 0;
+      list-style: none;
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    footer small {
+      display: block;
+      margin-top: 1.5rem;
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.75);
+    }
+  </style>
+</head>
+<body x-data="{
+  filter: new URLSearchParams(location.search).get('tipo') || 'tutto',
+  query: '',
+  items: [
+    {{- $allPages := where .Site.RegularPages "Type" "in" (slice "podcast" "articles") -}}
+    {{- range $i, $p := $allPages }}{{ if $i }},{{ end }}
+    {
+      title: {{ $p.Title | jsonify }},
+      type: {{ $p.Type | jsonify }},
+      url: {{ $p.RelPermalink | jsonify }},
+      season: {{ $p.Params.season | default 0 | jsonify }},
+      number: {{ $p.Params.number | default 0 | jsonify }},
+      description: {{ $p.Plain | truncate 300 | jsonify }},
+      keywords: {{ delimit ($p.Params.keywords | default slice) " " | jsonify }},
+      tags: {{ delimit ($p.Params.tags | default slice) " " | jsonify }}
+    }
+    {{- end }}
+  ],
+  fuse: null,
+
+  init() {
+    this.fuse = new Fuse(this.items, {
+      keys: [
+        { name: 'title', weight: 3 },
+        { name: 'keywords', weight: 2 },
+        { name: 'tags', weight: 2 },
+        { name: 'description', weight: 1 }
+      ],
+      threshold: 0.3,
+      ignoreLocation: true,
+      minMatchCharLength: 2
+    });
+
+    this.$watch('filter', (val) => {
+      const url = new URL(window.location);
+      if (val === 'tutto') {
+        url.searchParams.delete('tipo');
+      } else {
+        url.searchParams.set('tipo', val);
+      }
+      history.replaceState({}, '', url);
+    });
+  },
+
+  setFilter(f) { this.filter = f; },
+
+  get filteredItems() {
+    let results = this.items;
+    if (this.query.length >= 2) {
+      results = this.fuse.search(this.query).map(r => r.item);
+    }
+    if (this.filter !== 'tutto') {
+      const typeMap = { 'podcast': 'podcast', 'articoli': 'articles' };
+      results = results.filter(i => i.type === typeMap[this.filter]);
+    }
+    return results;
+  },
+
+  get podcasts() { return this.filteredItems.filter(i => i.type === 'podcast'); },
+  get articles() { return this.filteredItems.filter(i => i.type === 'articles'); },
+  get podcastCount() { return this.podcasts.length; },
+  get articleCount() { return this.articles.length; }
+}">
+  <header class="container">
+    <nav>
+      <ul>
+        <li><a href="/">{{ .Site.Title }}</a></li>
+      </ul>
+      <ul>
+        <li><a href="/">{{ partial "icons/x.html" }}</a></li>
+      </ul>
+    </nav>
+
+    <div>
+      <h1>{{ .Title }}</h1>
+      <p>{{ .Params.subtitle | default "Qui puoi cercare episodi e articoli" }}</p>
+    </div>
+  </header>
+
+  <main class="container" x-cloak>
+    <label>
+      <span class="sr-only">Cerca</span>
+      <input type="search" x-model="query" placeholder="Cerca..." aria-label="Cerca nel catalogo">
+    </label>
+
+    <p data-empty x-show="filteredItems.length === 0"><em>Nessun risultato trovato.</em></p>
+
+    <section x-show="podcasts.length > 0 && (filter === 'tutto' || filter === 'podcast')">
+      <header>
+        <h2>Podcast</h2>
+        <span x-text="podcastCount"></span>
+      </header>
+      <ul role="list">
+        <template x-for="(item, idx) in podcasts" :key="item.url">
+          <li>
+            <template x-if="item.season && (idx === 0 || item.season !== podcasts[idx - 1].season)">
+              <span class="season-label" x-text="'SEASON ' + item.season"></span>
+            </template>
+            <a :href="item.url">
+              <small x-show="item.season" x-text="'S' + item.season + 'E' + item.number"></small>
+              <span x-text="item.title"></span>
+            </a>
+          </li>
+        </template>
+      </ul>
+    </section>
+
+    <section x-show="articles.length > 0 && (filter === 'tutto' || filter === 'articoli')">
+      <header>
+        <h2>Articoli</h2>
+        <span x-text="articleCount"></span>
+      </header>
+      <ul role="list">
+        <template x-for="item in articles" :key="item.url">
+          <li>
+            <a :href="item.url" x-text="item.title"></a>
+          </li>
+        </template>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p><a href="/">{{ site.Data.setup.title }}</a></p>
+      <section>
+        {{ $data := newScratch }}
+        {{ $data.Set "essential" .Site.Taxonomies.categories.essential }}
+        {{ $data.Set "footer" .Site.Taxonomies.categories.footer }}
+
+        {{ range slice "essential" "footer" }}
+        <menu>
+          {{ range $data.Get . }}
+          <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+          {{ end }}
+        </menu>
+        {{ end }}
+      </section>
+
+      <small>{{ partial "components/copyleft.html" . }}</small>
+    </div>
+  </footer>
+</body>
+</html>

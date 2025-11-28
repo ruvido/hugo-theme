@@ -20,3 +20,9 @@ svg {
 .bigger svg {
 	height: 100%;
 }
+
+header nav svg {
+	width: 24px;
+	height: 24px;
+	min-width: 24px;
+}

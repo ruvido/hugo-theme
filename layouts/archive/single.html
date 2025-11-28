@@ -29,14 +29,10 @@
       src: url("/fonts/Inter-3.19.var.woff2") format("woff2");
     }
 
-    html {
+    html, body {
       overflow-x: hidden;
-    }
-
-    body {
-      overflow-y: scroll;
       width: 100%;
-      max-width: 100vw;
+      max-width: 100%;
     }
 
     :root {
@@ -49,6 +45,7 @@
       --line: #e0e0e0;
       --hero-font: gagalin, sans-serif;
       --pico-font-family: "Inter UI", system-ui, -apple-system, "Segoe UI", sans-serif;
+      --pico-container-max-width: 768px;
     }
 
     [x-cloak] {
@@ -58,6 +55,9 @@
     body > header {
       background: var(--primary);
       color: var(--inverse);
+      max-width: none;
+      width: 100%;
+      padding: var(--base-padding);
     }
 
     body > header nav {
@@ -86,14 +86,18 @@
 
     main.container hgroup {
       margin-bottom: 0;
-      max-width: 768px;
-      margin: 0 auto;
     }
 
     main.container > label {
       margin: 0rem auto;
       width: 100%;
       max-width: 320px;
+    }
+
+    @media (min-width: 768px) {
+      main.container > label {
+        max-width: 480px;
+      }
     }
 
     main.container > label input[type="search"] {
@@ -221,9 +225,12 @@
     footer {
       background: var(--inverse);
       color: var(--primary);
-      padding: 2.5rem 1.25rem 1.75rem;
+      padding: 2.5rem var(--base-padding) 1.75rem;
       margin-top: auto;
+      max-width: none;
+      width: 100%;
     }
+
 
     footer p:first-of-type {
       font-family: var(--hero-font);
@@ -466,23 +473,25 @@
     </section>
   </main>
 
-  <footer class="container">
-    <p><a href="/">{{ site.Data.setup.title }}</a></p>
-    <section>
-      {{ $data := newScratch }}
-      {{ $data.Set "essential" .Site.Taxonomies.categories.essential }}
-      {{ $data.Set "footer" .Site.Taxonomies.categories.footer }}
+  <footer>
+    <div class="container">
+      <p><a href="/">{{ site.Data.setup.title }}</a></p>
+      <section>
+        {{ $data := newScratch }}
+        {{ $data.Set "essential" .Site.Taxonomies.categories.essential }}
+        {{ $data.Set "footer" .Site.Taxonomies.categories.footer }}
 
-      {{ range slice "essential" "footer" }}
-      <menu>
-        {{ range $data.Get . }}
-        <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+        {{ range slice "essential" "footer" }}
+        <menu>
+          {{ range $data.Get . }}
+          <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+          {{ end }}
+        </menu>
         {{ end }}
-      </menu>
-      {{ end }}
-    </section>
+      </section>
 
-    <small>{{ partial "components/copyleft.html" . }}</small>
+      <small>{{ partial "components/copyleft.html" . }}</small>
+    </div>
   </footer>
 </body>
 </html>

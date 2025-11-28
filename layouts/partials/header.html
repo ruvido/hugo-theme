@@ -1,6 +1,6 @@
 {{ $archivePage := or (site.GetPage "section" "archivio") (site.GetPage "page" "archivio") }}
 {{ $isArchive := or (eq .Section "archivio") (eq .Type "archive") }}
-<header{{ if $isArchive }} class="container"{{ end }}>
+<header>
 	{{ $actionHref := cond $archivePage $archivePage.RelPermalink "/" }}
 	{{ $actionLabel := "Apri archivio" }}
 	{{ $actionIcon := "icons/search.html" }}
@@ -11,16 +11,18 @@
 		{{ $actionIcon = "icons/x.html" }}
 	{{ end }}
 
-	<nav>
-		<ul>
-			<li><a href="/">
-				<span class="verybig-text hero-text">{{ .Site.Title }}</span>
-			</a></li>
-		</ul>
-		<ul>
-			<li><a href="{{ $actionHref }}" aria-label="{{ $actionLabel }}">
-				{{ partial $actionIcon }}
-			</a></li>
-		</ul>
-	</nav>
+	<div class="container">
+		<nav>
+			<ul>
+				<li><a href="/">
+					<span class="verybig-text hero-text">{{ .Site.Title }}</span>
+				</a></li>
+			</ul>
+			<ul>
+				<li><a href="{{ $actionHref }}" aria-label="{{ $actionLabel }}">
+					{{ partial $actionIcon }}
+				</a></li>
+			</ul>
+		</nav>
+	</div>
 </header>

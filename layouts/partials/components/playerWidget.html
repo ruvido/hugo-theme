@@ -1,0 +1,319 @@
+{{/*
+    Player Widget Component
+
+    Inline audio player based on the fixed player from podcast/single.html
+
+    Usage in templates:
+        {{ partial "components/playerWidget" . }}
+
+    Usage in markdown (via shortcode):
+        {{% playerWidget %}}
+
+    Frontmatter option:
+        featured: "s4/11"  (optional - defaults to latest episode)
+*/}}
+
+{{/* Get podcast config */}}
+{{ $podcastConfig := "/content/podcast/_index.md" }}
+{{ $podcastData := readFile $podcastConfig | transform.Unmarshal }}
+
+{{/* Determine which episode to use */}}
+{{ $episode := false }}
+
+{{/* Check for featured episode in frontmatter */}}
+{{ with .Params.featured }}
+    {{ $parts := split . "/" }}
+    {{ if eq (len $parts) 2 }}
+        {{ $season := index $parts 0 }}
+        {{ $number := index $parts 1 }}
+        {{ range where site.RegularPages "Type" "podcast" }}
+            {{ if and (eq .Params.season $season) (eq .Params.number $number) }}
+                {{ $episode = . }}
+            {{ end }}
+        {{ end }}
+    {{ end }}
+{{ end }}
+
+{{/* Fallback to latest episode */}}
+{{ if not $episode }}
+    {{ $podcasts := where site.RegularPages "Type" "podcast" }}
+    {{ $podcasts = sort $podcasts "Date" "desc" }}
+    {{ with first 1 $podcasts }}
+        {{ $episode = index . 0 }}
+    {{ end }}
+{{ end }}
+
+{{ with $episode }}
+{{ $mp3File := print "https://" $podcastData.storage .Params.file }}
+{{ $episodeId := print .Params.season "-" .Params.number }}
+
+<div class="player-widget" x-data="{
+    playing: false,
+    currentTime: 0,
+    duration: 0,
+    speedIndex: 0,
+    speeds: [1, 1.25, 1.5, 2],
+    numBars: 40,
+    episodeId: '{{ $episodeId }}',
+
+    init() {
+        const audio = this.$refs.audio;
+        audio.addEventListener('loadedmetadata', () => {
+            this.duration = audio.duration;
+            const saved = localStorage.getItem(`podcast_${this.episodeId}`);
+            if (saved && parseFloat(saved) > 5) {
+                audio.currentTime = parseFloat(saved);
+            }
+        });
+        audio.addEventListener('timeupdate', () => {
+            this.currentTime = audio.currentTime;
+            if (Math.floor(audio.currentTime) % 10 === 0) {
+                localStorage.setItem(`podcast_${this.episodeId}`, audio.currentTime);
+            }
+        });
+        audio.addEventListener('play', () => { this.playing = true; });
+        audio.addEventListener('pause', () => { this.playing = false; });
+        audio.addEventListener('ended', () => {
+            this.playing = false;
+            localStorage.removeItem(`podcast_${this.episodeId}`);
+        });
+        this.updateBars();
+        window.addEventListener('resize', () => this.updateBars());
+    },
+
+    updateBars() {
+        const width = window.innerWidth;
+        if (width < 400) this.numBars = 25;
+        else if (width < 768) this.numBars = 40;
+        else this.numBars = 60;
+    },
+
+    formatTime(seconds) {
+        if (isNaN(seconds)) return '0:00';
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return mins + ':' + (secs < 10 ? '0' : '') + secs;
+    },
+
+    getProgress() {
+        if (this.duration === 0) return 0;
+        return (this.currentTime / this.duration) * 100;
+    },
+
+    seekToBar(index) {
+        if (this.duration === 0) return;
+        const percentage = index / this.numBars;
+        this.$refs.audio.currentTime = this.duration * percentage;
+    }
+}">
+    <audio x-ref="audio" src="{{ $mp3File }}" preload="metadata"></audio>
+
+    {{/* Episode title */}}
+    <div class="player-widget__title">
+        <a href="{{ .RelPermalink }}">S{{ .Params.season }}E{{ .Params.number }} - {{ .Title }}</a>
+    </div>
+
+    {{/* Waveform */}}
+    <div class="player-widget__waveform">
+        <span class="player-widget__time" x-text="formatTime(currentTime)">0:00</span>
+        <div class="player-widget__bars">
+            <template x-for="i in numBars" :key="i">
+                <div
+                    class="player-widget__bar"
+                    :class="{ 'played': getProgress() > ((i-1) / numBars * 100) }"
+                    :style="'height: ' + (Math.random() * 60 + 20) + '%'"
+                    @click="seekToBar(i-1)"
+                ></div>
+            </template>
+        </div>
+        <span class="player-widget__time" x-text="formatTime(duration)">0:00</span>
+    </div>
+
+    {{/* Controls */}}
+    <div class="player-widget__controls">
+        {{/* Download */}}
+        <a :href="$refs.audio.src" download class="player-widget__btn" aria-label="Download">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+        </a>
+
+        {{/* Rewind 10s */}}
+        <button class="player-widget__btn player-widget__btn--skip" @click="$refs.audio.currentTime -= 10" aria-label="Rewind 10 seconds">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        </button>
+
+        {{/* Play/Pause */}}
+        <button class="player-widget__btn player-widget__btn--play" :class="{ 'playing': playing }" @click="playing ? $refs.audio.pause() : $refs.audio.play()" aria-label="Play/Pause"></button>
+
+        {{/* Forward 30s */}}
+        <button class="player-widget__btn player-widget__btn--skip" @click="$refs.audio.currentTime += 30" aria-label="Forward 30 seconds">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+        </button>
+
+        {{/* Speed */}}
+        <button
+            class="player-widget__btn player-widget__btn--speed"
+            @click="speedIndex = (speedIndex + 1) % speeds.length; $refs.audio.playbackRate = speeds[speedIndex]"
+            x-text="speeds[speedIndex] + 'x'"
+            aria-label="Playback speed"
+        >1x</button>
+    </div>
+</div>
+
+<style>
+.player-widget {
+    background: #1a1a1a;
+    border-radius: 16px;
+    padding: 1rem 1.25rem;
+    max-width: 600px;
+    margin: 1.5rem auto;
+}
+
+.player-widget__title {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.player-widget__title a {
+    color: #fff;
+    text-decoration: none;
+    opacity: 0.9;
+}
+
+.player-widget__title a:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+.player-widget__waveform {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.player-widget__time {
+    font-size: 0.75rem;
+    color: #999;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    min-width: 40px;
+}
+
+.player-widget__time:last-child {
+    text-align: right;
+}
+
+.player-widget__bars {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 40px;
+    gap: 2px;
+    cursor: pointer;
+}
+
+.player-widget__bar {
+    flex: 1;
+    background: #444;
+    border-radius: 3px;
+    min-width: 3px;
+    transition: all 0.2s ease;
+    opacity: 0.7;
+}
+
+.player-widget__bar:hover {
+    opacity: 1;
+}
+
+.player-widget__bar.played {
+    background: #FFD700;
+    opacity: 1;
+}
+
+.player-widget__controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+.player-widget__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    color: #fff;
+}
+
+.player-widget__btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.player-widget__btn:active {
+    transform: scale(0.95);
+}
+
+.player-widget__btn--skip {
+    width: 48px;
+    height: 48px;
+}
+
+.player-widget__btn--play {
+    width: 64px;
+    height: 64px;
+    background: #FFD700;
+    position: relative;
+}
+
+.player-widget__btn--play:hover {
+    background: #FFC700;
+}
+
+.player-widget__btn--play::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-40%, -50%);
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 14px 0 14px 22px;
+    border-color: transparent transparent transparent #000;
+    transition: all 0.2s ease;
+}
+
+.player-widget__btn--play.playing::after {
+    border: none;
+    width: 20px;
+    height: 24px;
+    background: linear-gradient(to right, #000 0%, #000 30%, transparent 30%, transparent 70%, #000 70%, #000 100%);
+    transform: translate(-50%, -50%);
+}
+
+.player-widget__btn--speed {
+    width: 48px;
+    height: 48px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #FFD700;
+}
+
+@media (max-width: 400px) {
+    .player-widget__btn--skip {
+        display: none;
+    }
+
+    .player-widget__controls {
+        gap: 0.75rem;
+    }
+}
+</style>
+{{ end }}

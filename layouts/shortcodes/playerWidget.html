@@ -1,0 +1,12 @@
+{{/*
+    Player Widget Shortcode
+
+    Wrapper that calls the playerWidget partial component.
+
+    Usage in markdown:
+        {{% playerWidget %}}
+
+    Frontmatter option in content file:
+        featured: "s4/11"  (optional - defaults to latest episode)
+*/}}
+{{ partial "components/playerWidget" .Page }}

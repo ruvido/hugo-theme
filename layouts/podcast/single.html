@@ -27,8 +27,6 @@
 
 	<!-- Alpine.js -->
 	<script defer src="/js/alpine-3.11.1.min.js"></script>
-	<!-- Fuse.js for search -->
-	<script src="/js/fuse.min.js"></script>
 
 	<style>
 		:root {
@@ -140,71 +138,6 @@
 			margin-bottom: 0.5rem;
 		}
 
-		.waveform-container {
-			display: flex;
-			align-items: center;
-			gap: 0;
-			margin: 1rem 0;
-		}
-
-		.waveform {
-			height: 40px;
-			flex: 1;
-			background: transparent;
-			border-radius: 8px;
-			position: relative;
-			cursor: pointer;
-			margin: 0 0.25rem;
-		}
-
-		.waveform-bars {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			height: 100%;
-			gap: 2px;
-			padding: 0 0.5rem;
-		}
-
-		.time-label {
-			font-size: 0.75rem;
-			color: #999;
-			font-variant-numeric: tabular-nums;
-			white-space: nowrap;
-			flex: 0 0 auto;
-			min-width: 45px;
-		}
-
-		.time-label:first-child {
-			padding-left: 0.5rem;
-			padding-right: 0.5rem;
-		}
-
-		.time-label:last-child {
-			text-align: right;
-			padding-left: 0.5rem;
-			padding-right: 0.5rem;
-		}
-
-		.waveform-bar {
-			flex: 1;
-			background: #ddd;
-			border-radius: 3px;
-			min-width: 3px;
-			transition: all 0.2s ease;
-			opacity: 0.7;
-		}
-
-		.waveform-bar:hover {
-			opacity: 1;
-		}
-
-		.waveform-bar.played {
-			background: #333;
-			opacity: 1;
-		}
-
-
 		.icon-bar {
 			display: flex;
 			gap: 0.7rem;
@@ -255,171 +188,6 @@
 			opacity: 0.3;
 		}
 
-		/* Search Modal */
-		[x-cloak] { display: none !important; }
-
-		.search-overlay {
-			position: fixed;
-			inset: 0;
-			background: rgba(0,0,0,0.8);
-			z-index: 2000;
-			display: flex;
-			align-items: flex-start;
-			justify-content: center;
-			padding-top: 15vh;
-		}
-
-		.search-modal {
-			width: 90%;
-			max-width: 400px;
-		}
-
-		.search-modal input {
-			width: 100%;
-			padding: 1rem 3rem 1rem 1rem;
-			font-size: 1.1rem;
-			border: none;
-			border-radius: 8px;
-			margin: 0;
-		}
-
-		.search-input-wrapper {
-			position: relative;
-		}
-
-		.search-close {
-			position: absolute;
-			right: 0.75rem;
-			top: 0;
-			bottom: 0;
-			margin: auto;
-			height: 24px;
-			background: none;
-			border: none;
-			padding: 0;
-			cursor: pointer;
-			line-height: 0;
-		}
-
-		.search-results {
-			list-style: none;
-			margin: 0.5rem 0 0 0;
-			padding: 0;
-			background: white;
-			border-radius: 8px;
-			max-height: 50vh;
-			overflow-y: auto;
-		}
-
-		.search-results li a {
-			display: block;
-			padding: 0.75rem 1rem;
-			color: #333;
-			text-decoration: none;
-			border-bottom: 1px solid #eee;
-		}
-
-		.search-results li:last-child a {
-			border-bottom: none;
-		}
-
-		.search-results li a:hover {
-			background: #f5f5f5;
-		}
-
-		/* Player - part of grid layout */
-		.fixed-player {
-			background: #1a1a1a;
-			border-top: 1px solid #333;
-			box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
-			padding: 0.75rem 0;
-			padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
-		}
-
-		.player-controls {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			max-width: var(--card-max-width);
-			margin: 0 auto;
-			padding: 0 1rem;
-			gap: 1rem;
-		}
-
-		.control-btn {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			background: transparent;
-			border: none;
-			cursor: pointer;
-			padding: 0.5rem;
-			border-radius: 50%;
-			transition: all 0.2s ease;
-			color: #fff;
-		}
-
-		.control-btn:hover {
-			background: rgba(255, 255, 255, 0.1);
-		}
-
-		.control-btn:active {
-			transform: scale(0.95);
-		}
-
-		.play-btn {
-			width: 64px;
-			height: 64px;
-			background: #FFD700;
-			border-radius: 50%;
-			padding: 0;
-			position: relative;
-		}
-
-		.play-btn:hover {
-			background: #FFC700;
-		}
-
-		.play-btn svg {
-			display: none;
-		}
-
-		.play-btn::after {
-			content: '';
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translate(-40%, -50%);
-			width: 0;
-			height: 0;
-			border-style: solid;
-			border-width: 14px 0 14px 22px;
-			border-color: transparent transparent transparent #000;
-			transition: all 0.2s ease;
-		}
-
-		.play-btn.playing::after {
-			border: none;
-			width: 20px;
-			height: 24px;
-			background: linear-gradient(to right, #000 0%, #000 30%, transparent 30%, transparent 70%, #000 70%, #000 100%);
-			transform: translate(-50%, -50%);
-			transition: all 0.2s ease;
-		}
-
-		.skip-btn {
-			width: 48px;
-			height: 48px;
-		}
-
-		.speed-btn {
-			width: 48px;
-			height: 48px;
-			font-size: 14px;
-			font-weight: 600;
-			color: #FFD700;
-		}
-
 		/* Navbar - part of grid layout */
 		nav {
 			height: 56px;
@@ -441,13 +209,6 @@
 			justify-content: center;
 			background: none;
 			border: none;
-		}
-
-		/* Very narrow screens: hide skip buttons */
-		@media (max-width: 280px) {
-			.skip-btn {
-				display: none;
-			}
 		}
 
 		@media (max-width: 767px) {
@@ -490,176 +251,31 @@
 				margin: 0 auto;
 				padding: 2rem 1.5rem;
 			}
-
-			.waveform-container {
-				max-width: var(--content-max-width);
-				margin-left: auto;
-				margin-right: auto;
-			}
-
-			.fixed-player-content {
-				max-width: var(--content-max-width);
-				margin: 0 auto;
-			}
 		}
 	</style>
 </head>
 <body>
+	{{ $archivePage := .Site.GetPage "/archivio" }}
 	<div class="podcast-card" x-data="{
-		playing: false,
-		currentTime: 0,
-		duration: 0,
-		speedIndex: 0,
-		speeds: [1, 1.25, 1.5, 2],
-		numBars: 50,
-		episodeId: '{{ .Params.season }}-{{ .Params.number }}',
 		isScrolled: false,
-		searchOpen: false,
-		searchQuery: '',
-		searchResults: [],
-		episodes: [
-			{{- $episodes := where .Site.RegularPages "Type" "in" (slice "podcast" "newsletter" "articles") -}}
-			{{- range $i, $ep := $episodes }}{{ if $i }},{{ end }}
-			{ title: {{ $ep.Title | jsonify }}, description: {{ $ep.Plain | truncate 500 | jsonify }}, keywords: {{ delimit ($ep.Params.keywords | default slice) " " | jsonify }}, tags: {{ delimit ($ep.Params.tags | default slice) " " | jsonify }}, url: {{ $ep.RelPermalink | jsonify }}, season: {{ $ep.Params.season | jsonify }}, number: {{ $ep.Params.number | jsonify }} }
-			{{- end }}
-		],
-		fuse: null,
 
 		init() {
-			// Init Fuse.js
-			this.fuse = new Fuse(this.episodes, {
-				keys: [
-					{ name: 'keywords', weight: 3 },
-					{ name: 'tags', weight: 3 },
-					{ name: 'title', weight: 2 },
-					{ name: 'description', weight: 1 }
-				],
-				threshold: 0.2,
-				ignoreLocation: true,
-				minMatchCharLength: 2
-			});
-			const audio = this.$refs.audio;
-			audio.addEventListener('loadedmetadata', () => {
-				this.duration = audio.duration;
-
-				// Ripristina posizione salvata
-				const saved = localStorage.getItem(`podcast_${this.episodeId}`);
-				if (saved && parseFloat(saved) > 5) {
-					audio.currentTime = parseFloat(saved);
-				}
-			});
-			audio.addEventListener('timeupdate', () => {
-				this.currentTime = audio.currentTime;
-
-				// Salva posizione ogni 10 secondi
-				if (Math.floor(audio.currentTime) % 10 === 0) {
-					localStorage.setItem(`podcast_${this.episodeId}`, audio.currentTime);
-				}
-			});
-			audio.addEventListener('play', () => { this.playing = true; });
-			audio.addEventListener('pause', () => { this.playing = false; });
-			audio.addEventListener('ended', () => {
-				this.playing = false;
-				localStorage.removeItem(`podcast_${this.episodeId}`);
-			});
-
 			// Listener per lo scroll della navbar
 			const scrollWrapper = this.$refs.scrollWrapper;
 			scrollWrapper.addEventListener('scroll', () => {
 				this.isScrolled = scrollWrapper.scrollTop > 0;
 			});
-
-			this.updateBars();
-			window.addEventListener('resize', () => {
-				this.updateBars();
-			});
-		},
-
-		updateBars() {
-			const width = window.innerWidth;
-			if (width < 400) {
-				this.numBars = 25;
-			} else if (width < 768) {
-				this.numBars = 40;
-			} else {
-				this.numBars = 60;
-			}
-		},
-
-		formatTime(seconds) {
-			if (isNaN(seconds)) return '0:00';
-			const mins = Math.floor(seconds / 60);
-			const secs = Math.floor(seconds % 60);
-			return mins + ':' + (secs < 10 ? '0' : '') + secs;
-		},
-
-		getProgress() {
-			if (this.duration === 0) return 0;
-			return (this.currentTime / this.duration) * 100;
-		},
-
-		seekToBar(index) {
-			if (this.duration === 0) return;
-			const percentage = index / this.numBars;
-			const audio = this.$refs.audio;
-			audio.currentTime = this.duration * percentage;
-		},
-
-		search() {
-			if (this.searchQuery.length < 2) {
-				this.searchResults = [];
-				return;
-			}
-			this.searchResults = this.fuse.search(this.searchQuery).slice(0, 10);
-		},
-
-		openSearch() {
-			this.searchOpen = true;
-			this.$nextTick(() => this.$refs.searchInput.focus());
-		},
-
-		closeSearch() {
-			this.searchOpen = false;
-			this.searchQuery = '';
-			this.searchResults = [];
 		}
 	}">
-		<!-- Hidden Audio Element -->
-		<audio x-ref="audio" src="{{ $mp3File }}" preload="metadata"></audio>
-
 		<!-- Fixed Navbar -->
 		<nav :style="{ backgroundColor: isScrolled ? 'white' : '{{ $dominantColor }}' }">
 			<a href="/" aria-label="Back to home">
 				{{ partial "icons/x.html" }}
 			</a>
-			<button @click="openSearch()" aria-label="Search">
+			<a href="{{ $archivePage.RelPermalink }}" aria-label="Archivio">
 				{{ partial "icons/search.html" }}
-			</button>
+			</a>
 		</nav>
-
-		<!-- Search Modal -->
-		<div x-show="searchOpen" x-cloak class="search-overlay" @click.self="closeSearch()" @keydown.escape.window="closeSearch()">
-			<div class="search-modal">
-				<div class="search-input-wrapper">
-					<input
-						x-ref="searchInput"
-						x-model="searchQuery"
-						@input="search()"
-						type="text"
-						placeholder="Cerca episodi..."
-						autocomplete="off"
-					>
-					<button @click="closeSearch()" class="search-close">{{ partial "icons/x.html" }}</button>
-				</div>
-				<ul x-show="searchResults.length > 0" class="search-results">
-					<template x-for="result in searchResults" :key="result.item.url">
-						<li>
-							<a :href="result.item.url" x-text="(result.item.season ? 'S' + result.item.season + 'E' + result.item.number + ' - ' : '') + result.item.title"></a>
-						</li>
-					</template>
-				</ul>
-			</div>
-		</div>
 
 		<!-- Scrollable Wrapper for Cover + Content -->
 		<div class="scrollable-wrapper" x-ref="scrollWrapper">
@@ -724,59 +340,8 @@
 			</div>
 		</div>
 
-		<!-- Fixed Player Controls -->
-		<div class="fixed-player">
-			<div class="fixed-player-content">
-				<!-- Waveform with Time Display -->
-				<div class="waveform-container">
-					<span class="time-label" x-text="formatTime(currentTime)">0:00</span>
-					<div class="waveform">
-						<div class="waveform-bars">
-							<template x-for="i in numBars" :key="i">
-								<div
-									class="waveform-bar"
-									:class="{ 'played': getProgress() > ((i-1) / numBars * 100) }"
-									:style="'height: ' + (Math.random() * 60 + 20) + '%'"
-									@click="seekToBar(i-1)"
-								></div>
-							</template>
-						</div>
-					</div>
-					<span class="time-label" x-text="formatTime(duration)">0:00</span>
-				</div>
-
-				<!-- Player Controls -->
-				<div class="player-controls">
-					<!-- Download -->
-					<a :href="$refs.audio.src" download class="control-btn" aria-label="Download episode">
-						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-					</a>
-
-					<!-- Rewind 10s -->
-					<button class="control-btn skip-btn" @click="$refs.audio.currentTime -= 10" aria-label="Rewind 10 seconds">
-						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-					</button>
-
-					<!-- Play/Pause -->
-					<button class="control-btn play-btn" :class="{ 'playing': playing }" @click="playing ? $refs.audio.pause() : $refs.audio.play()" aria-label="Play/Pause"></button>
-
-					<!-- Forward 30s -->
-					<button class="control-btn skip-btn" @click="$refs.audio.currentTime += 30" aria-label="Forward 30 seconds">
-						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
-					</button>
-
-					<!-- Speed -->
-					<button
-						class="control-btn speed-btn"
-						@click="speedIndex = (speedIndex + 1) % speeds.length; $refs.audio.playbackRate = speeds[speedIndex]"
-						x-text="speeds[speedIndex] + '×'"
-						aria-label="Playback speed"
-					>
-						1×
-					</button>
-				</div>
-			</div>
-		</div>
+		<!-- Player Widget -->
+		{{ partial "components/playerWidget" (dict "episode" . "mode" "fixed" "mp3" $mp3File) }}
 	</div>
 </body>
 </html>

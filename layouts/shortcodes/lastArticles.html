@@ -1,7 +1,4 @@
-
-<h2>
-	Ultimi articoli
-</h2>
+<h2><a href="/archivio/">Ultimi articoli</a></h2>
 
 {{ $articles := (where .Site.RegularPages "Type" "articles" ) }}
 <!-- {{ partial "components/playlist" (dict "pages" $articles "items" site.Data.setup.playlistItems) }} -->

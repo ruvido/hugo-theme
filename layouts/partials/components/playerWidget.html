@@ -1,53 +1,65 @@
 {{/*
-    Player Widget Component
+    Player Component - Unified player for homepage and podcast pages
 
-    Inline audio player based on the fixed player from podcast/single.html
+    Usage:
+        Inline (homepage):  {{ partial "components/playerWidget" . }}
+        Fixed (podcast):    {{ partial "components/playerWidget" (dict "episode" . "mode" "fixed" "mp3" $mp3File) }}
 
-    Usage in templates:
-        {{ partial "components/playerWidget" . }}
-
-    Usage in markdown (via shortcode):
-        {{% playerWidget %}}
-
-    Frontmatter option:
-        featured: "s4/11"  (optional - defaults to latest episode)
+    Parameters:
+        - mode: "inline" (default) or "fixed"
+        - episode: the episode page (optional for inline, uses latest)
+        - mp3: direct mp3 URL (for fixed mode)
 */}}
 
-{{/* Get podcast config */}}
-{{ $podcastConfig := "/content/podcast/_index.md" }}
-{{ $podcastData := readFile $podcastConfig | transform.Unmarshal }}
-
-{{/* Determine which episode to use */}}
+{{ $mode := "inline" }}
 {{ $episode := false }}
+{{ $mp3File := "" }}
+{{ $site := site }}
 
-{{/* Check for featured episode in frontmatter */}}
-{{ with .Params.featured }}
-    {{ $parts := split . "/" }}
-    {{ if eq (len $parts) 2 }}
-        {{ $season := index $parts 0 }}
-        {{ $number := index $parts 1 }}
-        {{ range where site.RegularPages "Type" "podcast" }}
-            {{ if and (eq .Params.season $season) (eq .Params.number $number) }}
-                {{ $episode = . }}
+{{/* Handle dict input for fixed mode */}}
+{{ if reflect.IsMap . }}
+    {{ $mode = .mode | default "inline" }}
+    {{ $episode = .episode }}
+    {{ $mp3File = .mp3 | default "" }}
+    {{ with .site }}{{ $site = . }}{{ end }}
+{{ else }}
+    {{/* Standard page context - find episode */}}
+    {{ $podcastConfig := "/content/podcast/_index.md" }}
+    {{ $podcastData := readFile $podcastConfig | transform.Unmarshal }}
+
+    {{/* Check for featured episode in frontmatter */}}
+    {{ with .Params.featured }}
+        {{ $parts := split . "/" }}
+        {{ if eq (len $parts) 2 }}
+            {{ $season := index $parts 0 }}
+            {{ $number := index $parts 1 }}
+            {{ range where $site.RegularPages "Type" "podcast" }}
+                {{ if and (eq .Params.season $season) (eq .Params.number $number) }}
+                    {{ $episode = . }}
+                {{ end }}
             {{ end }}
         {{ end }}
     {{ end }}
-{{ end }}
 
-{{/* Fallback to latest episode */}}
-{{ if not $episode }}
-    {{ $podcasts := where site.RegularPages "Type" "podcast" }}
-    {{ $podcasts = sort $podcasts "Date" "desc" }}
-    {{ with first 1 $podcasts }}
-        {{ $episode = index . 0 }}
+    {{/* Fallback to latest episode */}}
+    {{ if not $episode }}
+        {{ $podcasts := where $site.RegularPages "Type" "podcast" }}
+        {{ $podcasts = sort $podcasts "Date" "desc" }}
+        {{ with first 1 $podcasts }}
+            {{ $episode = index . 0 }}
+        {{ end }}
+    {{ end }}
+
+    {{ with $episode }}
+        {{ $mp3File = print "https://" $podcastData.storage .Params.file }}
     {{ end }}
 {{ end }}
 
 {{ with $episode }}
-{{ $mp3File := print "https://" $podcastData.storage .Params.file }}
 {{ $episodeId := print .Params.season "-" .Params.number }}
+{{ $isFixed := eq $mode "fixed" }}
 
-<div class="player-widget" x-data="{
+<div class="player {{ if $isFixed }}player--fixed{{ else }}player--inline{{ end }}" x-data="{
     playing: false,
     currentTime: 0,
     duration: 0,
@@ -108,50 +120,44 @@
 }">
     <audio x-ref="audio" src="{{ $mp3File }}" preload="metadata"></audio>
 
-    {{/* Episode title */}}
-    <div class="player-widget__title">
+    {{ if not $isFixed }}
+    <div class="player__title">
         <a href="{{ .RelPermalink }}">S{{ .Params.season }}E{{ .Params.number }} - {{ .Title }}</a>
     </div>
+    {{ end }}
 
-    {{/* Waveform */}}
-    <div class="player-widget__waveform">
-        <span class="player-widget__time" x-text="formatTime(currentTime)">0:00</span>
-        <div class="player-widget__bars">
+    <div class="player__waveform">
+        <span class="player__time" x-text="formatTime(currentTime)">0:00</span>
+        <div class="player__bars">
             <template x-for="i in numBars" :key="i">
                 <div
-                    class="player-widget__bar"
+                    class="player__bar"
                     :class="{ 'played': getProgress() > ((i-1) / numBars * 100) }"
                     :style="'height: ' + (Math.random() * 60 + 20) + '%'"
                     @click="seekToBar(i-1)"
                 ></div>
             </template>
         </div>
-        <span class="player-widget__time" x-text="formatTime(duration)">0:00</span>
+        <span class="player__time" x-text="formatTime(duration)">0:00</span>
     </div>
 
-    {{/* Controls */}}
-    <div class="player-widget__controls">
-        {{/* Download */}}
-        <a :href="$refs.audio.src" download class="player-widget__btn" aria-label="Download">
+    <div class="player__controls">
+        <a :href="$refs.audio.src" download class="player__btn" aria-label="Download">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
         </a>
 
-        {{/* Rewind 10s */}}
-        <button class="player-widget__btn player-widget__btn--skip" @click="$refs.audio.currentTime -= 10" aria-label="Rewind 10 seconds">
+        <button class="player__btn player__btn--skip" @click="$refs.audio.currentTime -= 10" aria-label="Rewind 10 seconds">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
         </button>
 
-        {{/* Play/Pause */}}
-        <button class="player-widget__btn player-widget__btn--play" :class="{ 'playing': playing }" @click="playing ? $refs.audio.pause() : $refs.audio.play()" aria-label="Play/Pause"></button>
+        <button class="player__btn player__btn--play" :class="{ 'playing': playing }" @click="playing ? $refs.audio.pause() : $refs.audio.play()" aria-label="Play/Pause"></button>
 
-        {{/* Forward 30s */}}
-        <button class="player-widget__btn player-widget__btn--skip" @click="$refs.audio.currentTime += 30" aria-label="Forward 30 seconds">
+        <button class="player__btn player__btn--skip" @click="$refs.audio.currentTime += 30" aria-label="Forward 30 seconds">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
         </button>
 
-        {{/* Speed */}}
         <button
-            class="player-widget__btn player-widget__btn--speed"
+            class="player__btn player__btn--speed"
             @click="speedIndex = (speedIndex + 1) % speeds.length; $refs.audio.playbackRate = speeds[speedIndex]"
             x-text="speeds[speedIndex] + 'x'"
             aria-label="Playback speed"
@@ -160,39 +166,58 @@
 </div>
 
 <style>
-.player-widget {
+/* Base styles */
+.player {
     background: #1a1a1a;
+}
+
+/* Inline mode (homepage) */
+.player--inline {
     border-radius: 16px;
     padding: 1rem 1.25rem;
     max-width: 600px;
     margin: 1.5rem auto;
 }
 
-.player-widget__title {
+/* Fixed mode (podcast page) */
+.player--fixed {
+    border-top: 1px solid #333;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    padding: 0.75rem 1rem;
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+}
+
+.player--fixed .player__waveform,
+.player--fixed .player__controls {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.player__title {
     text-align: center;
     margin-bottom: 1rem;
     font-size: 0.9rem;
 }
 
-.player-widget__title a {
+.player__title a {
     color: #fff;
     text-decoration: none;
     opacity: 0.9;
 }
 
-.player-widget__title a:hover {
+.player__title a:hover {
     opacity: 1;
     text-decoration: underline;
 }
 
-.player-widget__waveform {
+.player__waveform {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     margin-bottom: 1rem;
 }
 
-.player-widget__time {
+.player__time {
     font-size: 0.75rem;
     color: #999;
     font-variant-numeric: tabular-nums;
@@ -200,11 +225,11 @@
     min-width: 40px;
 }
 
-.player-widget__time:last-child {
+.player__time:last-child {
     text-align: right;
 }
 
-.player-widget__bars {
+.player__bars {
     flex: 1;
     display: flex;
     align-items: center;
@@ -214,7 +239,7 @@
     cursor: pointer;
 }
 
-.player-widget__bar {
+.player__bar {
     flex: 1;
     background: #444;
     border-radius: 3px;
@@ -223,23 +248,27 @@
     opacity: 0.7;
 }
 
-.player-widget__bar:hover {
+.player__bar:hover {
     opacity: 1;
 }
 
-.player-widget__bar.played {
+.player__bar.played {
     background: #FFD700;
     opacity: 1;
 }
 
-.player-widget__controls {
+.player__controls {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 1rem;
 }
 
-.player-widget__btn {
+.player--fixed .player__controls {
+    justify-content: space-between;
+}
+
+.player__btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -252,31 +281,31 @@
     color: #fff;
 }
 
-.player-widget__btn:hover {
+.player__btn:hover {
     background: rgba(255, 255, 255, 0.1);
 }
 
-.player-widget__btn:active {
+.player__btn:active {
     transform: scale(0.95);
 }
 
-.player-widget__btn--skip {
+.player__btn--skip {
     width: 48px;
     height: 48px;
 }
 
-.player-widget__btn--play {
+.player__btn--play {
     width: 64px;
     height: 64px;
     background: #FFD700;
     position: relative;
 }
 
-.player-widget__btn--play:hover {
+.player__btn--play:hover {
     background: #FFC700;
 }
 
-.player-widget__btn--play::after {
+.player__btn--play::after {
     content: '';
     position: absolute;
     top: 50%;
@@ -290,7 +319,7 @@
     transition: all 0.2s ease;
 }
 
-.player-widget__btn--play.playing::after {
+.player__btn--play.playing::after {
     border: none;
     width: 20px;
     height: 24px;
@@ -298,7 +327,7 @@
     transform: translate(-50%, -50%);
 }
 
-.player-widget__btn--speed {
+.player__btn--speed {
     width: 48px;
     height: 48px;
     font-size: 14px;
@@ -307,12 +336,18 @@
 }
 
 @media (max-width: 400px) {
-    .player-widget__btn--skip {
+    .player__btn--skip {
         display: none;
     }
-
-    .player-widget__controls {
+    .player__controls {
         gap: 0.75rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .player--fixed .player__waveform,
+    .player--fixed .player__controls {
+        max-width: 700px;
     }
 }
 </style>

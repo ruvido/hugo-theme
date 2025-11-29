@@ -1,27 +1,89 @@
+{{ $page := . }}
+{{ $dominantColor := "" }}
+{{ if reflect.IsMap . }}
+	{{ $page = .page }}
+	{{ $dominantColor = .dominantColor | default "" }}
+{{ end }}
+
 {{ $archivePage := or (site.GetPage "section" "archivio") (site.GetPage "page" "archivio") }}
-{{ $isArchive := or (eq .Section "archivio") (eq .Type "archive") }}
-<header>
-	{{ $actionHref := cond $archivePage $archivePage.RelPermalink "/" }}
-	{{ $actionLabel := "Apri archivio" }}
-	{{ $actionIcon := "icons/search.html" }}
+{{ $isArchive := or (eq $page.Section "archivio") (eq $page.Type "archive") }}
+{{ $isPodcast := eq $page.Type "podcast" }}
+{{ $showX := or $isArchive $isPodcast }}
 
-	{{ if $isArchive }}
-		{{ $actionHref = site.Home.RelPermalink }}
-		{{ $actionLabel = "Chiudi archivio" }}
-		{{ $actionIcon = "icons/x.html" }}
-	{{ end }}
+{{ $bgColor := $dominantColor | default "var(--primary, #FFD700)" }}
 
+<style>
+@font-face {
+	font-family: "gagalin";
+	src: local("Gagalin"), url("/fonts/Gagalin-Regular.woff") format("woff");
+}
+.site-header {
+	padding: 16px;
+	position: sticky;
+	top: 0;
+	z-index: 1000;
+	height: 86px;
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	transition: background-color 0.2s ease;
+}
+.site-header .container {
+	width: 100%;
+	max-width: 768px;
+	margin: 0 auto;
+	padding: 0 16px;
+}
+.site-header nav {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+}
+.site-header nav ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.site-header nav a {
+	color: inherit;
+	text-decoration: none;
+	display: flex;
+	align-items: center;
+}
+.site-header nav svg {
+	width: 24px;
+	height: 24px;
+	display: block;
+}
+.site-header .hero-text {
+	font-family: gagalin, sans-serif;
+	font-style: italic;
+}
+.site-header .verybig-text {
+	font-size: 180%;
+	line-height: 1;
+}
+</style>
+
+<header class="site-header" style="background: {{ $bgColor | safeCSS }}">
 	<div class="container">
 		<nav>
 			<ul>
 				<li><a href="/">
-					<span class="verybig-text hero-text">{{ .Site.Title }}</span>
+					<span class="verybig-text hero-text">{{ $page.Site.Title }}</span>
 				</a></li>
 			</ul>
 			<ul>
-				<li><a href="{{ $actionHref }}" aria-label="{{ $actionLabel }}">
-					{{ partial $actionIcon }}
+				{{ if $showX }}
+				<li><a href="/" x-data x-init="if(document.referrer.includes(location.host)) $el.href = document.referrer" aria-label="Chiudi">
+					{{ partial "icons/x.html" }}
 				</a></li>
+				{{ else }}
+				<li><a href="{{ with $archivePage }}{{ .RelPermalink }}{{ else }}/{{ end }}" aria-label="Apri archivio">
+					{{ partial "icons/search.html" }}
+				</a></li>
+				{{ end }}
 			</ul>
 		</nav>
 	</div>

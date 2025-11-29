@@ -1,0 +1,49 @@
+@font-face {
+	font-family: "gagalin";
+	src: local("Gagalin"), url("/fonts/Gagalin-Regular.woff") format("woff");
+}
+
+header {
+	padding: var(--base-padding, 16px);
+	position: sticky;
+	top: 0;
+	z-index: 100;
+	background: var(--primary, #FFD700);
+}
+
+header .container {
+	max-width: 500px;
+	margin: 0 auto;
+}
+
+header nav {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+header nav ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+header nav a {
+	color: inherit;
+	text-decoration: none;
+}
+
+header nav svg {
+	width: 24px;
+	height: 24px;
+	display: block;
+}
+
+.hero-text {
+	font-family: gagalin, sans-serif;
+	font-style: italic;
+}
+
+.verybig-text {
+	font-size: 180%;
+}

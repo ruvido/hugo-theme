@@ -1,0 +1,40 @@
+{{/*
+    Search Button - Small rectangle with search icon, fixed above player on right
+*/}}
+
+<a href="/archivio/" class="search-btn" aria-label="Cerca">
+	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.34-4.34"/></svg>
+</a>
+
+<style>
+.search-btn {
+	position: fixed;
+	bottom: calc(140px + env(safe-area-inset-bottom, 0px));
+	right: 8px;
+	width: 48px;
+	height: 48px;
+	background: #FFD700;
+	border-radius: 8px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 999;
+}
+
+.search-btn svg {
+	width: 24px;
+	height: 24px;
+}
+
+@media (min-width: 768px) {
+	.search-btn {
+		width: 64px;
+		height: 64px;
+	}
+
+	.search-btn svg {
+		width: 32px;
+		height: 32px;
+	}
+}
+</style>

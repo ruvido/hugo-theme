@@ -20,17 +20,12 @@
     }
 
     @font-face {
-      font-family: "gagalin";
-      src: local("Gagalin"), url("/fonts/Gagalin-Regular.woff") format("woff");
-    }
-    @font-face {
       font-family: "Inter UI";
       font-weight: 100 900;
       src: url("/fonts/Inter-3.19.var.woff2") format("woff2");
     }
 
-    html, body {
-      overflow-x: hidden;
+    body {
       width: 100%;
       max-width: 100%;
     }
@@ -51,31 +46,6 @@
     [x-cloak] {
       display: none !important;
     }
-
-    body > header {
-      background: var(--primary);
-      color: var(--inverse);
-      max-width: none;
-      width: 100%;
-      padding: var(--base-padding);
-    }
-
-    body > header nav {
-      column-gap: 0;
-    }
-
-    body > header a {
-      color: var(--inverse);
-      text-decoration: none;
-    }
-
-    .hero-text {
-      font-family: var(--hero-font);
-      font-style: italic;
-      font-weight: 400;
-    }
-
-    .verybig-text { font-size: 180%; }
 
     main.container {
       padding: 2rem 1.25rem 2rem;
@@ -381,7 +351,7 @@
   get podcastCount() { return this.podcasts.length; },
   get articleCount() { return this.articles.length; }
 }">
-  {{ partial "header.html" . }}
+  {{ partial "header.html" (dict "page" .) }}
 
   <main class="container" x-cloak>
 

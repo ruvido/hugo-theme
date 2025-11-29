@@ -57,6 +57,11 @@
 		.scrollable-wrapper {
 			overflow-y: auto;
 			-webkit-overflow-scrolling: touch;
+			scrollbar-width: none;
+		}
+
+		.scrollable-wrapper::-webkit-scrollbar {
+			display: none;
 		}
 
 		.cover {
@@ -188,29 +193,6 @@
 			opacity: 0.3;
 		}
 
-		/* Navbar - part of grid layout */
-		nav {
-			height: 56px;
-			z-index: 1001;
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			padding: 0 1rem;
-			transition: background-color 0.2s;
-		}
-
-		nav a,
-		nav button {
-			width: 40px;
-			height: 40px;
-			padding: 0;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			background: none;
-			border: none;
-		}
-
 		@media (max-width: 767px) {
 			.podcast-card {
 				max-width: 100%;
@@ -255,30 +237,11 @@
 	</style>
 </head>
 <body>
-	{{ $archivePage := .Site.GetPage "/archivio" }}
-	<div class="podcast-card" x-data="{
-		isScrolled: false,
-
-		init() {
-			// Listener per lo scroll della navbar
-			const scrollWrapper = this.$refs.scrollWrapper;
-			scrollWrapper.addEventListener('scroll', () => {
-				this.isScrolled = scrollWrapper.scrollTop > 0;
-			});
-		}
-	}">
-		<!-- Fixed Navbar -->
-		<nav :style="{ backgroundColor: isScrolled ? 'white' : '{{ $dominantColor }}' }">
-			<a href="/" aria-label="Back to home">
-				{{ partial "icons/x.html" }}
-			</a>
-			<a href="{{ $archivePage.RelPermalink }}" aria-label="Archivio">
-				{{ partial "icons/search.html" }}
-			</a>
-		</nav>
+	<div class="podcast-card">
+		{{ partial "header.html" (dict "page" . "dominantColor" $dominantColor) }}
 
 		<!-- Scrollable Wrapper for Cover + Content -->
-		<div class="scrollable-wrapper" x-ref="scrollWrapper">
+		<div class="scrollable-wrapper">
 			<!-- Cover with Navigation -->
 			<div class="cover-with-nav">
 				{{ with .Prev }}{{ if eq .Type "podcast" }}<a href="{{ .RelPermalink }}" class="nav-prev">{{ partial "icons/chevron-left.html" }}</a>{{ end }}{{ end }}
@@ -339,6 +302,9 @@
 
 			</div>
 		</div>
+
+		<!-- Search Sticky -->
+		{{ partial "components/searchSticky.html" }}
 
 		<!-- Player Widget -->
 		{{ partial "components/playerWidget" (dict "episode" . "mode" "fixed" "mp3" $mp3File) }}

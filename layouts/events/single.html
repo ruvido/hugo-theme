@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light only">
+  <title>{{ .Title }} | {{ site.Data.setup.title }}</title>
+  {{ partial "components/favicon.html" | safeHTML }}
+
+  <!-- Pico CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <link rel="stylesheet" href="/css/events.css">
+
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    @font-face {
+      font-family: "Inter UI";
+      font-weight: 100 900;
+      src: url("/fonts/Inter-3.19.var.woff2") format("woff2");
+    }
+
+    body {
+      width: 100%;
+      max-width: 100%;
+      background: var(--primary);
+    }
+
+    :root {
+      --half-padding: 8px;
+      --base-padding: 16px;
+      --double-padding: 32px;
+      --primary: #ffde59;
+      --inverse: #1f1f1f;
+      --muted: #666666;
+      --line: #e0e0e0;
+      --hero-font: gagalin, sans-serif;
+      --pico-font-family: "Inter UI", system-ui, -apple-system, "Segoe UI", sans-serif;
+      --pico-container-max-width: 768px;
+    }
+
+    main.container {
+      padding: 2rem 1.25rem 2rem;
+    }
+
+    main.container article {
+      background: white;
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+    }
+
+    main.container hgroup {
+      color: var(--inverse);
+    }
+
+    main.container hgroup h1 {
+      font-family: var(--hero-font);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 4rem;
+      line-height: 1.05;
+    }
+
+    main.container form [data-submit-button] {
+      background: #000;
+      border-color: #000;
+      color: #fff;
+    }
+
+    main.container form [data-submit-button]:is(:hover, :focus) {
+      background: #111;
+      border-color: #111;
+    }
+
+    footer {
+      background: var(--inverse);
+      color: var(--primary);
+      padding: 2.5rem var(--base-padding) 1.75rem;
+      margin-top: auto;
+      max-width: none;
+      width: 100%;
+    }
+
+    footer p:first-of-type {
+      font-family: var(--hero-font);
+      font-size: 1.5rem;
+      font-style: italic;
+      margin: 0 0 1.5rem;
+    }
+
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    footer menu {
+      padding: 0;
+      margin: 0;
+      list-style: none;
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    footer small {
+      display: block;
+      margin-top: 1.5rem;
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.75);
+    }
+  </style>
+</head>
+<body>
+  {{ partial "header.html" (dict "page" .) }}
+
+  <main class="container">
+    <hgroup>
+      <h1>{{ .Title }}</h1>
+      {{ with .Params.subtitle }}
+      <h2>{{ . }}</h2>
+      {{ end }}
+    </hgroup>
+
+    {{ .Content | safeHTML }}
+  </main>
+
+  <footer>
+    <div class="container">
+      <p><a href="/">{{ site.Data.setup.title }}</a></p>
+      <section>
+        {{ $data := newScratch }}
+        {{ $data.Set "essential" .Site.Taxonomies.categories.essential }}
+        {{ $data.Set "footer" .Site.Taxonomies.categories.footer }}
+
+        {{ range slice "essential" "footer" }}
+        <menu>
+          {{ range $data.Get . }}
+          <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+          {{ end }}
+        </menu>
+        {{ end }}
+      </section>
+
+      <small>{{ partial "components/copyleft.html" . }}</small>
+    </div>
+  </footer>
+</body>
+</html>

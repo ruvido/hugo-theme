@@ -1,0 +1,210 @@
+{{/*
+  Event banner component.
+
+  Usage:
+    {{ partial "components/eventBanner" (dict "mode" "compact") }}
+    {{ partial "components/eventBanner" (dict "mode" "large") }}
+*/}}
+
+{{ $mode := "compact" }}
+{{ if reflect.IsMap . }}
+  {{ $mode = .mode | default "compact" }}
+{{ end }}
+
+{{ $events := where site.RegularPages "Section" "events" }}
+{{ $upcoming := slice }}
+{{ range $events }}
+  {{ $eventDate := time.AsTime "0001-01-01" }}
+  {{ $hasEventDate := false }}
+  {{ $filename := .File.BaseFileName }}
+  {{ $match := findRE "^\\d{4}-\\d{2}-\\d{2}" $filename }}
+  {{ if gt (len $match) 0 }}
+    {{ $dateStr := index $match 0 }}
+    {{ $eventDate = time.AsTime $dateStr }}
+    {{ $hasEventDate = true }}
+  {{ end }}
+
+  {{ $expiryDate := time.AsTime "0001-01-01" }}
+  {{ $hasExpiry := false }}
+  {{ with .Params.expiryDate }}
+    {{ $expiryDate = time.AsTime . }}
+    {{ $hasExpiry = true }}
+  {{ end }}
+
+  {{ $isUpcoming := false }}
+  {{ if $hasExpiry }}
+    {{ if lt now $expiryDate }}
+      {{ $isUpcoming = true }}
+    {{ end }}
+  {{ else if $hasEventDate }}
+    {{ if ge $eventDate now }}
+      {{ $isUpcoming = true }}
+    {{ end }}
+  {{ end }}
+
+  {{ if and $isUpcoming $hasEventDate }}
+    {{ $upcoming = $upcoming | append (dict "date" $eventDate "page" .) }}
+  {{ end }}
+{{ end }}
+{{ $upcoming = sort $upcoming "date" "asc" }}
+
+{{ with first 1 $upcoming }}
+  {{ $entry := index . 0 }}
+  {{ $eventPage := $entry.page }}
+  {{ $when := $eventPage.Params.when | default "" }}
+  {{ $where := $eventPage.Params.where | default "" }}
+  {{ $cta := $eventPage.Params.cta_text | default "SCOPRI" }}
+
+  {{ $plain := $eventPage.Content | plainify }}
+  {{ $lines := split $plain "\n" }}
+  {{ $teaser := "" }}
+  {{ range $lines }}
+    {{ $line := strings.TrimSpace . }}
+    {{ if and (eq $teaser "") (ne $line "") (not (strings.HasPrefix $line "#")) }}
+      {{ $teaser = $line }}
+    {{ end }}
+  {{ end }}
+  {{ if gt (len $teaser) 120 }}
+    {{ $teaser = printf "%s..." (slicestr $teaser 0 117) }}
+  {{ else if ne $teaser "" }}
+    {{ $teaser = printf "%s..." $teaser }}
+  {{ end }}
+
+  <a class="event-banner event-banner--{{ $mode }}" href="{{ $eventPage.RelPermalink }}">
+    {{ if eq $mode "compact" }}
+      <span class="event-banner__line">
+        <span class="event-banner__kicker-compact">Il prossimo raduno è qui</span> · {{ $where }} {{ $when }} · <span class="event-banner__cta-button">{{ $cta }}</span>
+      </span>
+    {{ else }}
+      <div class="event-banner__text">
+        <span class="event-banner__kicker">Il prossimo raduno è qui</span>
+        <span class="event-banner__title">{{ $where }} · {{ $when }}</span>
+        <span class="event-banner__meta">{{ $teaser }}</span>
+      </div>
+      <div class="event-banner__side">
+        <span class="event-banner__cta-button">{{ $cta }}</span>
+        <span class="event-banner__note">Posti limitati</span>
+      </div>
+    {{ end }}
+  </a>
+
+  <style>
+    .event-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      background: #1a1a1a;
+      color: #fff;
+      border-radius: 16px;
+      text-decoration: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    }
+
+    .event-banner:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.25);
+    }
+
+    .event-banner__cta-button {
+      color: #000;
+      background: var(--primary, #FFD700);
+      border-radius: 999px;
+      padding: 0.45rem 1.1rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--primary, #FFD700);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .event-banner--compact {
+      padding: 0.75rem 0.9rem;
+      max-width: 700px;
+      margin: 1rem auto 1.5rem;
+      font-size: 0.95rem;
+      line-height: 1.3;
+    }
+
+    .event-banner--compact .event-banner__line {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .event-banner__kicker-compact {
+      color: var(--primary, #FFD700);
+      font-weight: 700;
+    }
+
+    .event-banner--large {
+      padding: 1.25rem 1.5rem;
+      border-radius: 20px;
+      margin-top: 2rem;
+    }
+
+    .event-banner--large .event-banner__text {
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .event-banner--large .event-banner__kicker {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--primary, #FFD700);
+    }
+
+    .event-banner--large .event-banner__title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .event-banner--large .event-banner__meta {
+      font-size: 0.95rem;
+      color: #cfcfcf;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 36ch;
+    }
+
+    .event-banner--large .event-banner__side {
+      display: grid;
+      justify-items: end;
+      align-content: center;
+      gap: 0.25rem;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .event-banner--large .event-banner__note {
+      font-size: 0.6rem;
+      color: var(--primary, #FFD700);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-align: center;
+      width: 100%;
+    }
+
+    @media (max-width: 520px) {
+      .event-banner--compact {
+        font-size: 0.85rem;
+      }
+      .event-banner--large {
+        padding: 1rem 1.1rem;
+      }
+      .event-banner--large .event-banner__title {
+        font-size: 1.15rem;
+      }
+      .event-banner--large .event-banner__side {
+        justify-items: start;
+        text-align: left;
+      }
+    }
+  </style>
+{{ end }}

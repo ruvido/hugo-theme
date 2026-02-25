@@ -1,1 +1,3 @@
+{{ if not (eq .Site.Params.newsletter.showSubscribeBox false) }}
 {{ partial "components/subscribe.html" . }}
+{{ end }}

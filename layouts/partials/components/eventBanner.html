@@ -11,6 +11,73 @@
   {{ $mode = .mode | default "compact" }}
 {{ end }}
 
+{{ if eq $mode "compact" }}
+  <a class="event-banner event-banner--{{ $mode }}" href="https://branco.realmen.it">
+    <span class="event-banner__line">
+      Iscriviti ai gruppi Realmen <span class="event-banner__cta-button">VAI</span>
+    </span>
+  </a>
+
+  <style>
+    .event-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      background: #1a1a1a;
+      color: #fff;
+      border-radius: 16px;
+      text-decoration: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    }
+
+    .event-banner:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.25);
+    }
+
+    .event-banner__cta-button {
+      color: #000;
+      background: var(--primary, #FFD700);
+      border-radius: 999px;
+      padding: 0.3rem 0.9rem;
+      font-weight: 700;
+      font-size: 0.95em;
+      line-height: 1;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--primary, #FFD700);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .event-banner--compact {
+      padding: 0.75rem 0.9rem;
+      max-width: 700px;
+      margin: 1rem auto 1.5rem;
+      font-size: 1rem;
+      line-height: 1.2;
+    }
+
+    .event-banner--compact .event-banner__line {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      font-weight: 600;
+    }
+
+    @media (max-width: 520px) {
+      .event-banner--compact {
+        font-size: 0.92rem;
+      }
+    }
+  </style>
+{{ else }}
 {{ $events := where site.RegularPages "Section" "events" }}
 {{ $upcoming := slice }}
 {{ range $events }}
@@ -207,4 +274,5 @@
       }
     }
   </style>
+{{ end }}
 {{ end }}

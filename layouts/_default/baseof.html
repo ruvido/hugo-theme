@@ -34,9 +34,7 @@
 
 </head>
 <body>
-	{{ if .IsHome }}
-		{{ partial "components/eventBanner" (dict "mode" "compact") }}
-	{{ end }}
+	{{ partial "components/eventBanner" . }}
 	{{ partial "header" . }}
 	{{ block "main" . }}{{ end }}
 	{{ partial "footer" . }}

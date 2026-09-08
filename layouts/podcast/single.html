@@ -29,7 +29,14 @@
 	<script defer src="/js/alpine-3.11.1.min.js"></script>
 
 	<style>
+		@font-face {
+			font-family: "Inter UI";
+			font-weight: 100 900;
+			src: url("/fonts/Inter-3.19.var.woff2") format("woff2");
+		}
+
 		:root {
+			--pico-font-family: "Inter UI", system-ui, -apple-system, "Segoe UI", sans-serif;
 			--primary: #FFD700;
 			--primary-dark: #FFA500;
 			--card-max-width: 500px;
@@ -51,7 +58,7 @@
 			height: 100dvh;
 			overflow: hidden;
 			display: grid;
-			grid-template-rows: 56px 1fr auto;
+			grid-template-rows: auto auto 1fr auto;
 		}
 
 		.scrollable-wrapper {
@@ -164,6 +171,12 @@
 			transform: scale(1.15);
 		}
 
+		.banner-slot .event-banner {
+			margin: 0.75rem auto;
+			max-width: min(700px, calc(100% - 2rem));
+			box-sizing: border-box;
+		}
+
 		/* Cover with Navigation */
 		.cover-with-nav {
 			position: relative;
@@ -238,6 +251,9 @@
 </head>
 <body>
 	<div class="podcast-card">
+		<div class="banner-slot" style="background-color: {{ $dominantColor }};">
+			{{ partial "components/eventBanner" . }}
+		</div>
 		{{ partial "header.html" (dict "page" . "dominantColor" $dominantColor) }}
 
 		<!-- Scrollable Wrapper for Cover + Content -->
@@ -298,8 +314,6 @@
 					{{ end }}
 			<!-- Episode Navigation -->
 				</div>
-
-				{{ partial "components/eventBanner" (dict "mode" "large") }}
 
 			</div>
 		</div>
